@@ -22,32 +22,34 @@ from typing import Any, Dict
 
 # ─── Public API ──────────────────────────────────────────────────────────────
 
-def generate_pdf_report(brief: Dict[str, Any]) -> bytes:
+def generate_pdf_report(brief: Dict[str, Any]):
     """
     Render the intelligence brief as a PDF.
-    Returns raw PDF bytes ready for streaming to the client.
+    Returns raw PDF bytes if headless browser is available, or None to fallback to print-ready HTML.
     """
-    from playwright.sync_api import sync_playwright
-
-    html = _render_pdf_html(brief)
-    
-    with sync_playwright() as p:
-        try:
-            # Standard headless Chromium (works on Linux/Render/Docker)
-            browser = p.chromium.launch(headless=True)
-        except Exception:
-            # Fallback to local system Edge browser (Windows development)
-            browser = p.chromium.launch(headless=True, channel="msedge")
-        page = browser.new_page()
-        page.set_content(html)
-        pdf_bytes = page.pdf(
-            format="A4",
-            print_background=True,
-            margin={"top": "2cm", "bottom": "2cm", "left": "1.8cm", "right": "1.8cm"}
-        )
-        browser.close()
+    try:
+        from playwright.sync_api import sync_playwright
+        html = _render_pdf_html(brief)
         
-    return pdf_bytes
+        with sync_playwright() as p:
+            try:
+                # Standard headless Chromium (works on Linux/Docker)
+                browser = p.chromium.launch(headless=True)
+            except Exception:
+                # Fallback to local system Edge browser (Windows development)
+                browser = p.chromium.launch(headless=True, channel="msedge")
+            page = browser.new_page()
+            page.set_content(html)
+            pdf_bytes = page.pdf(
+                format="A4",
+                print_background=True,
+                margin={"top": "2cm", "bottom": "2cm", "left": "1.8cm", "right": "1.8cm"}
+            )
+            browser.close()
+            
+        return pdf_bytes
+    except Exception:
+        return None
 
 
 # ─── HTML Template ───────────────────────────────────────────────────────────

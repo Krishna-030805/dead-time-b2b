@@ -286,11 +286,21 @@ def get_report_pdf(
         observation_days=obs,
     )
     pdf_bytes = generate_pdf_report(brief)
-    return Response(
-        content=pdf_bytes, 
-        media_type="application/pdf", 
-        headers={"Content-Disposition": f'attachment; filename="DeadTime_Report_{org_id}.pdf"'}
+    if pdf_bytes:
+        return Response(
+            content=pdf_bytes, 
+            media_type="application/pdf", 
+            headers={"Content-Disposition": f'attachment; filename="DeadTime_Report_{org_id}.pdf"'}
+        )
+    # Fallback when headless browser is not installed in cloud container
+    from pdf_engine import _render_pdf_html
+    html_content = _render_pdf_html(brief)
+    # Inject auto-print script so the browser immediately offers 'Save as PDF'
+    html_content = html_content.replace(
+        "</body>", 
+        "<script>window.addEventListener('load', () => setTimeout(() => window.print(), 500));</script></body>"
     )
+    return HTMLResponse(content=html_content)
 
 
 # â”€â”€â”€ Layer 5 & 6: Automation Blueprints & Engine â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
