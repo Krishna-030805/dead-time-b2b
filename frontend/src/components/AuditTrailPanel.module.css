@@ -1,0 +1,70 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.header h2 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #f8fafc;
+  margin-bottom: 0.35rem;
+}
+
+.subtitle {
+  font-size: 0.82rem;
+  color: var(--t2);
+  max-width: 650px;
+  line-height: 1.45;
+}
+
+.toggleGroup {
+  display: flex;
+  background: #090c14;
+  border: 1px solid var(--border);
+  padding: 0.25rem;
+  border-radius: 6px;
+  gap: 0.3rem;
+}
+
+.toggleBtn {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--t2);
+  padding: 0.45rem 0.85rem;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 0.76rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.toggleBtn:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.toggleActive {
+  background: #1e293b !important;
+  color: #60a5fa !important;
+  border-color: rgba(59, 130, 246, 0.3);
+}
+
+.content {
+  min-height: 400px;
+}

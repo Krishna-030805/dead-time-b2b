@@ -1,0 +1,72 @@
+.tabs {
+  display: flex;
+  gap: 0.25rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 1.75rem;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 0;
+}
+
+.tab {
+  background: transparent;
+  border: none;
+  outline: none;
+  padding: 0.7rem 1.1rem;
+  font-family: var(--font);
+  font-weight: 600;
+  font-size: 0.82rem;
+  color: var(--t2);
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+  position: relative;
+  bottom: -1px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+  border-radius: 6px 6px 0 0;
+}
+
+.tab:hover {
+  color: var(--t1);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.iconWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.75;
+  transition: opacity 0.15s;
+}
+
+.active {
+  color: #60a5fa;
+  border-bottom-color: #3b82f6;
+  background: rgba(59, 130, 246, 0.04);
+}
+
+.active .iconWrap {
+  opacity: 1;
+  color: #3b82f6;
+}
+
+.badge {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--t2);
+  border-radius: 9999px;
+  font-weight: 700;
+  font-size: 0.65rem;
+  padding: 0.1rem 0.45rem;
+  min-width: 18px;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.active .badge {
+  background: rgba(59, 130, 246, 0.2);
+  color: #93c5fd;
+}

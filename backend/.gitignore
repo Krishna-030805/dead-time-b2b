@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environments
+.env
+.env.*
+!.env.example
+
+# Virtual environments
+venv/
+.venv/
+
+# PDF/Chromium cache
+/.playwright/
+/pdfs/

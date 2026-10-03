@@ -1,0 +1,27 @@
+{
+  "manifest_version": 3,
+  "name": "Dead Time - Web Recorder",
+  "version": "1.0",
+  "description": "Records workflow metadata for Dead Time Intelligence",
+  "permissions": [
+    "activeTab",
+    "storage",
+    "scripting"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ],
+  "action": {
+    "default_title": "Dead Time",
+    "default_popup": "popup.html"
+  }
+}

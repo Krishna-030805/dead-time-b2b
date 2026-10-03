@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="header">
+    <div class="logo">DT</div>
+    <div>
+      <div class="title">Dead Time Recorder</div>
+      <div class="subtitle">Workflow Intelligence Engine</div>
+    </div>
+  </div>
+
+  <div class="status-box">
+    <div class="status-row">
+      <span>Backend:</span>
+      <span id="backend-status" class="status-badge offline">Checking...</span>
+    </div>
+    <div class="status-row">
+      <span>Telemetry:</span>
+      <span class="status-badge online">Active</span>
+    </div>
+  </div>
+
+  <div class="config-box">
+    <div class="config-label">Client Company / Org ID</div>
+    <div class="config-row" style="margin-bottom: 8px;">
+      <input type="text" id="org-id-input" placeholder="e.g. acme_corp" spellcheck="false" />
+    </div>
+    <div class="config-label">Employee / Device ID</div>
+    <div class="config-row">
+      <input type="text" id="user-id-input" placeholder="e.g. emp_rahul" spellcheck="false" />
+      <button id="btn-save-user" class="btn-save">Set</button>
+    </div>
+    <div id="save-msg" class="save-msg"></div>
+  </div>
+
+  <div class="actions">
+    <button id="btn-dashboard" class="btn primary">Open Audit Console</button>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

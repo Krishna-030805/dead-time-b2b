@@ -1,0 +1,322 @@
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 1.75rem;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.logo {
+  width: 38px;
+  height: 38px;
+  background: #1e293b;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.logoText {
+  font-family: var(--mono);
+  font-weight: 700;
+  font-size: 0.9rem;
+  letter-spacing: -0.02em;
+  color: #f8fafc;
+}
+
+.brandTitleRow {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.brandText h1 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #f8fafc;
+}
+
+.versionPill {
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  background: rgba(59, 130, 246, 0.12);
+  color: #60a5fa;
+  border: 1px solid rgba(59, 130, 246, 0.25);
+  padding: 0.15rem 0.45rem;
+  border-radius: 4px;
+}
+
+.brandText p {
+  font-size: 0.78rem;
+  color: var(--t2);
+  margin-top: 1px;
+}
+
+.right {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+  position: relative;
+}
+
+.livePill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  height: 34px;
+  padding: 0 0.85rem;
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+  color: #10b981;
+  box-sizing: border-box;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 6px #10b981;
+}
+
+.clientSelectorWrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  height: 34px;
+  padding: 0 0.65rem;
+  background: rgba(99, 102, 241, 0.08);
+  border: 1px solid rgba(99, 102, 241, 0.28);
+  border-radius: 6px;
+  box-sizing: border-box;
+}
+
+.clientIcon {
+  font-size: 0.85rem;
+}
+
+.clientSelect {
+  background: transparent;
+  border: none;
+  color: #c7d2fe;
+  font-size: 0.72rem;
+  font-weight: 600;
+  outline: none;
+  cursor: pointer;
+  letter-spacing: 0.02em;
+}
+
+.clientSelect option {
+  background: #0d1117;
+  color: #fff;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  height: 34px;
+  padding: 0 0.95rem;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.78rem;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.15s ease;
+  line-height: 1;
+  box-sizing: border-box;
+}
+
+.btnPrimary {
+  background: #2563eb;
+  border: 1px solid #3b82f6;
+  color: #ffffff;
+}
+
+.btnPrimary:hover {
+  background: #1d4ed8;
+  border-color: #60a5fa;
+}
+
+.btnSecondary {
+  background: #1e293b;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #f1f5f9;
+}
+
+.btnSecondary:hover {
+  background: #334155;
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+}
+
+/* Realized Savings Badge */
+.savingsBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  height: 34px;
+  padding: 0 0.85rem;
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  border-radius: 6px;
+  white-space: nowrap;
+  box-sizing: border-box;
+}
+
+.savingsIconWrap {
+  color: #10b981;
+  display: flex;
+  align-items: center;
+}
+
+.savingsContent {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.savingsLabel {
+  font-size: 0.58rem;
+  color: var(--t2);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 600;
+  line-height: 1;
+  margin-bottom: 2px;
+}
+
+.savingsValue {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #10b981;
+  line-height: 1;
+  font-feature-settings: 'tnum' 1;
+}
+
+/* Settings button */
+.settingsBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: #1e293b;
+  color: var(--t2);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-sizing: border-box;
+}
+
+.settingsBtn:hover,
+.settingsBtnActive {
+  border-color: rgba(255, 255, 255, 0.25);
+  color: #f8fafc;
+  background: #334155;
+}
+
+/* Settings Dropdown */
+.settingsDropdown {
+  position: absolute;
+  top: calc(100% + 0.6rem);
+  right: 0;
+  width: 310px;
+  background: #111827;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  padding: 1.25rem;
+  z-index: 100;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6);
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.settingsTitle {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--t1);
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.5rem;
+}
+
+.settingsSub {
+  font-size: 0.73rem;
+  color: var(--t2);
+  line-height: 1.45;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.settingsLabel {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--t2);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.settingsSelect {
+  width: 100%;
+  padding: 0.45rem 0.65rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 6px;
+  background: #090c14;
+  color: var(--t1);
+  font-size: 0.8rem;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.settingsSelect:hover,
+.settingsSelect:focus {
+  border-color: var(--accent);
+}
+
+.settingsSelect option {
+  background: #090c14;
+  color: #f8fafc;
+}
+
+.settingsClose {
+  margin-top: 0.25rem;
+  padding: 0.45rem;
+  border-radius: 6px;
+  border: 1px solid #3b82f6;
+  background: #2563eb;
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.settingsClose:hover {
+  background: #1d4ed8;
+}

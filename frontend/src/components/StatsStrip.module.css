@@ -1,0 +1,110 @@
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.85rem;
+  margin-bottom: 2rem;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1rem 1.15rem;
+  transition: border-color 0.15s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.card:hover {
+  border-color: rgba(255, 255, 255, 0.16);
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.label {
+  font-weight: 600;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--t2);
+}
+
+.cardIcon {
+  color: var(--t3);
+  display: flex;
+  align-items: center;
+}
+
+.value {
+  font-size: 1.55rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  color: #f8fafc;
+  font-feature-settings: 'tnum' 1;
+}
+
+.sub {
+  font-size: 0.7rem;
+  color: var(--t3);
+  margin-top: 0.4rem;
+}
+
+/* Variants */
+.variant_neutral .value {
+  color: #f8fafc;
+}
+
+.variant_blue .value {
+  color: #60a5fa;
+}
+
+.variant_blue .cardIcon {
+  color: #3b82f6;
+}
+
+.variant_amber .value {
+  color: #fbbf24;
+}
+
+.variant_amber .cardIcon {
+  color: #f59e0b;
+}
+
+.variant_rose .value {
+  color: #f87171;
+}
+
+.variant_rose .cardIcon {
+  color: #ef4444;
+}
+
+.variant_emerald .value {
+  color: #34d399;
+}
+
+.variant_emerald .cardIcon {
+  color: #10b981;
+}
+
+.variant_emeraldHighlight {
+  background: rgba(16, 185, 129, 0.05);
+  border-color: rgba(16, 185, 129, 0.3);
+}
+
+.variant_emeraldHighlight .value {
+  color: #10b981;
+}
+
+.variant_emeraldHighlight .cardIcon {
+  color: #10b981;
+}
+
+.variant_emeraldHighlight .label {
+  color: #6ee7b7;
+}

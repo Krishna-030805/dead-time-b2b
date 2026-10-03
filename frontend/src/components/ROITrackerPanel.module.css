@@ -1,0 +1,298 @@
+.roiContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.roiHeader {
+  padding: 1.25rem 1.5rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.headerContent h2 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #f8fafc;
+  margin-bottom: 0.35rem;
+}
+
+.headerContent p {
+  font-size: 0.82rem;
+  color: var(--t2);
+  max-width: 680px;
+  line-height: 1.45;
+}
+
+.refreshBtn {
+  background: #1e293b;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--t2);
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-shrink: 0;
+}
+
+.refreshBtn:hover {
+  background: #334155;
+  color: #fff;
+}
+
+.errorBox {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #fca5a5;
+  padding: 0.9rem 1.25rem;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.roiSummaryGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.85rem;
+}
+
+.roiStat {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1rem 1.15rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.roiStatLabel {
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--t3);
+  margin-bottom: 0.4rem;
+}
+
+.roiStatValue {
+  font-size: 1.55rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  font-feature-settings: 'tnum' 1;
+}
+
+.roiStatSub {
+  font-size: 0.7rem;
+  color: var(--t3);
+  margin-top: 0.35rem;
+}
+
+.colorIndigo {
+  color: #60a5fa;
+}
+
+.colorGreen {
+  color: #10b981;
+}
+
+.colorAmber {
+  color: #fbbf24;
+}
+
+.colorRose {
+  color: #f87171;
+}
+
+/* Empty State */
+.roiEmptyState {
+  text-align: center;
+  padding: 3.5rem 2rem;
+  background: var(--card);
+  border: 1px dashed var(--border);
+  border-radius: 8px;
+}
+
+.roiEmptyIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--t3);
+  margin-bottom: 0.75rem;
+}
+
+.roiEmptyTitle {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #f8fafc;
+  margin-bottom: 0.35rem;
+}
+
+.roiEmptySub {
+  font-size: 0.82rem;
+  color: var(--t2);
+  max-width: 520px;
+  margin: 0 auto;
+  line-height: 1.5;
+}
+
+.roiEmptySub strong {
+  color: #93c5fd;
+}
+
+/* Automation Card */
+.roiCard {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.roiCardHeader {
+  padding: 1.15rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.roiCardTitle {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #f8fafc;
+}
+
+.roiCardBadge {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  color: var(--t3);
+  padding: 0.2rem 0.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+
+.roiBeforeAfter {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1.25rem 1.5rem;
+  background: #090c14;
+  border-bottom: 1px solid var(--border);
+}
+
+.roiBeforeAfterCol {
+  display: flex;
+  flex-direction: column;
+}
+
+.baLabel {
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--t3);
+  margin-bottom: 0.3rem;
+}
+
+.baHrs {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 0.15rem;
+  font-feature-settings: 'tnum' 1;
+}
+
+.baCost {
+  font-size: 0.78rem;
+  color: var(--t2);
+}
+
+.roiArrow {
+  color: var(--t3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.roiSavingsBanner {
+  padding: 1rem 1.5rem;
+  background: rgba(16, 185, 129, 0.06);
+  border-bottom: 1px solid rgba(16, 185, 129, 0.2);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.savingsLabel {
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #6ee7b7;
+}
+
+.savingsValue {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #10b981;
+  margin-top: 0.15rem;
+  font-feature-settings: 'tnum' 1;
+}
+
+.execStats {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.78rem;
+  color: var(--t2);
+}
+
+.execStats div strong {
+  color: #f8fafc;
+  font-feature-settings: 'tnum' 1;
+}
+
+.loading {
+  text-align: center;
+  padding: 4rem;
+  color: var(--t2);
+}
+
+.spinner {
+  width: 28px;
+  height: 28px;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-top-color: #10b981;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 1rem;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.metaRow {
+  display: flex;
+  justify-content: flex-end;
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  color: var(--t3);
+  margin-top: 0.5rem;
+}

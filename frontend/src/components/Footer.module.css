@@ -1,0 +1,85 @@
+.footer {
+  margin-top: 4rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  color: var(--t3);
+  font-size: 0.78rem;
+}
+
+.left {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.badge {
+  background: rgba(59, 130, 246, 0.12);
+  border: 1px solid rgba(59, 130, 246, 0.25);
+  color: #60a5fa;
+  font-size: 0.6rem;
+  font-weight: 700;
+  padding: 0.12rem 0.45rem;
+  border-radius: 4px;
+  letter-spacing: 0.06em;
+}
+
+.brandName {
+  font-weight: 700;
+  color: var(--t1);
+  font-size: 0.85rem;
+}
+
+.version {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  color: var(--t3);
+}
+
+.tagline {
+  color: var(--t2);
+  font-size: 0.75rem;
+  max-width: 500px;
+  line-height: 1.45;
+}
+
+.security {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.securityBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.72rem;
+  color: var(--t2);
+  background: rgba(255, 255, 255, 0.02);
+  padding: 0.35rem 0.7rem;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+}
+
+.securityIcon {
+  color: var(--t3);
+}
+
+.statusDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 6px #10b981;
+}
