@@ -1,7 +1,7 @@
 // background.js — Dead Time B2B · Service Worker
 // Receives events from content scripts, enriches with session context, POSTs to API.
 
-const API_URL = "http://127.0.0.1:8002/events";
+const API_URL = "https://dead-time-backend.onrender.com/events";
 
 // ── Session Management ────────────────────────────────────────────────────────
 // A session ID is a UUID-like string that persists within the browser session.

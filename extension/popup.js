@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // Check backend health
-  fetch('http://localhost:8002/health')
+  fetch('https://dead-time-backend.onrender.com/health')
     .then(r => r.json())
     .then(data => {
       if(data.status === 'healthy') {
@@ -55,6 +55,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Open Next.js Dashboard
   btnDashboard.addEventListener('click', () => {
-    chrome.tabs.create({ url: 'http://localhost:3000/' });
+    chrome.tabs.create({ url: 'https://dead-time-b2b.vercel.app/' });
   });
 });
