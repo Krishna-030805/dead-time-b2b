@@ -1,217 +1,344 @@
-# Dead Time B2B — Master Project Documentation & Technical Specification
-
-> **Continuous Workflow Intelligence, Deterministic Pattern Mining, and Closed-Loop Automation Engine**
-
----
-
-## 1. Executive Summary & Value Proposition
-
-### What is Dead Time?
-**Dead Time B2B** is an enterprise process intelligence and workflow automation platform. It quietly observes knowledge-worker activity across web applications, deterministically detects repetitive cross-app routines (without recording sensitive keystrokes or passwords), quantifies the annual payroll cost of those workflows, and generates ready-to-run automation blueprints (n8n, Make.com, Python scripts).
-
-### The Business Problem
-In knowledge-work companies (agencies, B2B sales teams, customer ops, recruitment firms, e-commerce ops), knowledge workers spend **15% to 30% of their day on repetitive "dead time"**:
-- Copy-pasting data between CRM, email, and spreadsheets.
-- Manually looking up records across multiple browser tabs.
-- Updating databases, tracking spreadsheets, or status dashboards.
-
-Business leaders know automation saves money, but they do not know:
-1. *Which* workflows are happening repeatedly across their team.
-2. *How many hours* are truly wasted per week.
-3. *What the ROI* and payback period would be if automated.
-
-### The Solution: Zero-Friction Closed Loop
-1. **Observe:** Lightweight Chrome Extension captures privacy-safe telemetry events.
-2. **Reconstruct:** Backend groups events into sessions using a 30-minute inactivity threshold.
-3. **Mine:** An n-gram pattern mining algorithm discovers recurring cross-app sequences.
-4. **Quantify:** An ROI engine calculates exact weekly and annual financial waste based on hourly wages.
-5. **Advise:** LLM (Google Gemini Flash with multi-model fallback) produces grounded automation recommendations.
-6. **Execute & Export:** Human-in-the-loop review approves blueprints, simulates payloads via Sandbox Dry-Run, and exports turnkey workflows to n8n, Make.com, or standalone async Python.
-7. **Verify:** A Before vs. After ROI tracker verifies real-world realized savings.
+# Dead Time B2B — Master Project Documentation & System Reference
+*The Complete Technical, Operational, and Commercial Blueprint for Engineers, Operators, and LLMs.*
 
 ---
 
-## 2. System Architecture & Layers
+## 📑 Table of Contents
+1. [Executive Summary & Core Philosophy](#1-executive-summary--core-philosophy)
+2. [The Two-Phase Commercial & Operating Model](#2-the-two-phase-commercial--operating-model)
+   - [Phase 1: Workflow Efficiency Audit (Discovery & Quantification)](#phase-1-workflow-efficiency-audit-discovery--quantification)
+   - [Phase 2: Automation Implementation & Continuity Retainer](#phase-2-automation-implementation--continuity-retainer)
+3. [System Architecture & The 11 Functional Layers](#3-system-architecture--the-11-functional-layers)
+4. [Data Models & Mathematical Formulations](#4-data-models--mathematical-formulations)
+   - [Session Reconstruction Algorithm](#session-reconstruction-algorithm)
+   - [N-Gram Sequence Pattern Mining](#n-gram-sequence-pattern-mining)
+   - [Financial & ROI Quantification Formulas](#financial--roi-quantification-formulas)
+5. [Complete REST API Specification](#5-complete-rest-api-specification)
+6. [Component Deep Dive](#6-component-deep-dive)
+   - [Chrome Telemetry Extension (Manifest V3)](#a-chrome-telemetry-extension-manifest-v3)
+   - [FastAPI Python Backend & Algorithmic Engines](#b-fastapi-python-backend--algorithmic-engines)
+   - [Next.js 14 Executive Intelligence Dashboard](#c-nextjs-14-executive-intelligence-dashboard)
+7. [Cloud Deployment & Zero-Cost Infrastructure](#7-cloud-deployment--zero-cost-infrastructure)
+8. [Go-To-Market, Sales & Client Onboarding Playbook](#8-go-to-market-sales--client-onboarding-playbook)
+9. [Security, Privacy & Compliance Guarantees](#9-security-privacy--compliance-guarantees)
+10. [Quick-Start Development Guide](#10-quick-start-development-guide)
 
-Dead Time B2B is engineered as an 8-layer modular pipeline:
+---
+
+## 1. Executive Summary & Core Philosophy
+
+### What is Dead Time B2B?
+**Dead Time B2B** is an automated enterprise workflow intelligence, telemetry audit, and automation orchestration platform. It continuously observes how knowledge workers interact with web-based SaaS tools (Slack, Jira, Zendesk, Salesforce, Google Sheets, HubSpot, GitHub, Notion, etc.), mathematically reconstructs cross-application work patterns, quantifies the exact financial payroll wasted on repetitive manual actions ("dead time"), generates human-approved automation blueprints (n8n, Make.com, Python), and tracks verified post-deployment realized ROI.
+
+### Core Problem
+B2B companies spend millions on payroll. The average knowledge worker loses **15% to 30% of their day (20–40 hours per week across a 10-person team)** copy-pasting data between disconnected browser tabs, manually reconciling tickets, or moving records from form to spreadsheet. 
+- Traditional consulting firms charge $50,000+ for manual human interviews that are slow, inaccurate, and biased.
+- Monitoring software ("bossware") feels invasive, tracks keystrokes/screenshots, and fails to identify automatable workflows.
+- Dead Time bridges this gap: **Zero invasive spyware + 100% mathematical workflow telemetry + instant exportable automation scripts.**
+
+### Core Philosophy
+$$\text{Observe Silently} \longrightarrow \text{Quantify in Currency} \longrightarrow \text{Synthesize Blueprints} \longrightarrow \text{Deploy with Human Gate} \longrightarrow \text{Verify Realized ROI}$$
+
+---
+
+## 2. The Two-Phase Commercial & Operating Model
+
+Dead Time operates on a high-converting, low-friction **Two-Phase B2B Engagement Model**:
 
 ```
-┌────────────────────────────────────────────────────────────────────────┐
-│                        LAYER 1: TELEMETRY INGESTION                    │
-│   Chrome Extension (Manifest v3) -> Background Worker -> POST /events  │
-└───────────────────────────────────┬────────────────────────────────────┘
-                                    ▼
-┌────────────────────────────────────────────────────────────────────────┐
-│                  LAYER 2: DETERMINISTIC PATTERN MINER                  │
-│    Session Reconstruction (30m gap) -> N-gram Mining (2..6) -> Ranking │
-└───────────────────────────────────┬────────────────────────────────────┘
-                                    ▼
-┌────────────────────────────────────────────────────────────────────────┐
-│                    LAYER 3: ROI QUANTIFICATION ENGINE                  │
-│  Hourly Rate Extrapolation -> 48-Wk Annual Cost -> 80% Recovery Model  │
-└───────────────────────────────────┬────────────────────────────────────┘
-                                    ▼
-┌────────────────────────────────────────────────────────────────────────┐
-│                      LAYER 4: LLM INSIGHT ENGINE                       │
-│    Gemini Multi-Model Fallback Pool -> Strict Pydantic JSON Schema     │
-└───────────────────────────────────┬────────────────────────────────────┘
-                                    ▼
-┌────────────────────────────────────────────────────────────────────────┐
-│                   LAYER 5: BLUEPRINTING & EXPORT ENGINE                │
-│    Human-in-the-Loop Gateway -> Sandbox Dry-Run -> n8n / Make / Python │
-└───────────────────────────────────┬────────────────────────────────────┘
-                                    ▼
-┌────────────────────────────────────────────────────────────────────────┐
-│                   LAYER 6: CLOSED-LOOP EXECUTION LOGS                  │
-│         Execution Dispatcher -> Success/Failure Telemetry Logs         │
-└───────────────────────────────────┬────────────────────────────────────┘
-                                    ▼
-┌────────────────────────────────────────────────────────────────────────┐
-│                   LAYER 7: BEFORE VS AFTER ROI TRACKER                 │
-│      Baseline Hours vs Deployed Savings -> Realized Annual Payroll     │
-└───────────────────────────────────┬────────────────────────────────────┘
-                                    ▼
-┌────────────────────────────────────────────────────────────────────────┐
-│                     LAYER 8: NEXT.JS SAAS DASHBOARD                    │
-│   5-Tab Executive UI -> Multi-Currency Switcher -> Multi-Tenant Orgs   │
-└────────────────────────────────────────────────────────────────────────┘
+┌────────────────────────────────────────────────────────┐
+│  PHASE 1: WORKFLOW EFFICIENCY AUDIT (Discovery)        │
+│  - 3 to 14 day telemetry capture via Chrome Extension  │
+│  - Pattern reconstruction & N-gram mining              │
+│  - Deliverable: Executive ROI Audit (PDF/HTML)         │
+│  - Revenue: Free Pilot hook OR Paid Audit ($600/₹49k)  │
+└───────────────────────────┬────────────────────────────┘
+                            │ Proves Hard Dollar Waste
+                            ▼
+┌────────────────────────────────────────────────────────┐
+│  PHASE 2: AUTOMATION & CONTINUITY RETAINER             │
+│  - Implementation of top blueprints (n8n/Make/Python)  │
+│  - Sandbox dry-run testing & human sign-off            │
+│  - Live deployment & Closed-Loop ROI tracking          │
+│  - Revenue: Build Fee ($1.5k–$5k) + Retainer ($199/mo) │
+└────────────────────────────────────────────────────────┘
 ```
 
----
+### Phase 1: Workflow Efficiency Audit (Discovery & Quantification)
+* **Goal:** Land inside the client's operations with zero friction, establish trust, and provide undeniable data proving how much money their current manual processes are wasting.
+* **Duration:** 3 to 14 business days.
+* **Delivery Mechanism:** Private pilot ZIP file loaded unpacked into Google Chrome (`chrome://extensions`) on 3 to 10 key employee machines.
+* **Telemetry Collected:** Non-invasive browser navigation events, active domains, application context, session durations, and sequence flows. (No keystrokes, no passwords, no form inputs, no screenshots).
+* **Deliverables:**
+  1. **Executive Audit Report (Boardroom PDF & Interactive HTML):** Identifies top 3–5 recurring cross-app loops, frequency, hourly loss, and annual payroll cost.
+  2. **AI Executive Insights Brief:** Highlighting the #1 automation priority, payback period (in weeks), recommended tech stack, and zero-code quick wins.
+* **Commercial Options:**
+  - **Option A (Free Hook):** 100% Free 3-Day Pilot used as a foot-in-the-door strategy for warm leads and agencies.
+  - **Option B (Paid Audit):** Flat fee of **$600 / ₹49,000** for a full 14-day comprehensive diagnostic across 5–10 seats (deductible from Phase 2 fees).
 
-## 3. Component Deep Dive
-
-### 3.1 Telemetry Collection (`/extension`)
-- **Technology:** Chrome Extension (Manifest V3), Vanilla JavaScript.
-- **Privacy Architecture:**
-  - **Zero Form Extraction:** Password inputs, form inputs, and keystrokes are strictly ignored.
-  - **Sanitized Metadata:** Captures only high-level signals: `application` (e.g., `gmail`, `hubspot`, `google_sheets`, `linkedin`), `action_type` (`open`, `dwell`, `click`), `object_type` (`page`, `button`), and sanitised element labels.
-  - **Dwell Time:** Tracks active engagement duration; bounces under 3 seconds are discarded.
-  - **Session Management:** Client generates a session ID that automatically rolls over when an inactivity gap of >30 minutes occurs.
-  - **Multi-Tenancy:** Supports `org_id` and `user_id` storage so multiple client organizations can be partitioned on the same backend.
-
-### 3.2 Backend API & Core Engines (`/backend`)
-- **Framework:** FastAPI (Python 3.10+), SQLAlchemy, SQLite (`deadtime_b2b.db`) / PostgreSQL compatible.
-- **Deployment:** Render (`https://dead-time-backend.onrender.com`).
-- **Core Modules:**
-  1. `models.py`: Database entities:
-     - `Event`: Raw telemetry events with timestamps, application, action, and JSON metadata.
-     - `WorkflowSession`: Reconstructed work sessions bounded by inactivity gaps.
-     - `DetectedBrief`: Persisted intelligence reports with financial totals.
-     - `AutomationBlueprint`: Generated execution plans with lifecycle states (`pending_review`, `approved`, `rejected`, `deployed`).
-     - `AutomationExecution`: Real execution runtime logs for deployed automations.
-  2. `workflow_detector.py`: Pure deterministic Python algorithm.
-     - Sorts events chronologically.
-     - Splits into sessions on gaps $> 30$ minutes.
-     - Normalizes sessions into sequential app transitions (e.g. `["gmail", "linkedin", "google_sheets"]`).
-     - Extracts all sub-sequences (n-grams of length 2 to 6).
-     - Ranks patterns by frequency and time cost: $\text{Weekly Cost} = \text{Frequency} \times \text{Avg Duration} \times \text{Extrapolation Factor}$.
-  3. `roi_engine.py`:
-     - Multi-currency mathematical model (INR `₹`, USD `$`, GBP `£`, EUR `€`).
-     - Calculates annual costs assuming a 48-week working year.
-     - Assumes a conservative 80% automatable time recovery benchmark.
-     - Ranks opportunities into High ($\ge 3$ hrs/wk), Medium ($\ge 1$ hr/wk), and Low tiers.
-  4. `llm_engine.py`:
-     - Connects to Google Gemini via API.
-     - Features an automatic resilient fallback model pool (`gemini-3.1-flash-lite`, `gemini-3.5-flash-lite`, `gemini-3.5-flash`, `gemini-3.6-flash`, `gemini-3.8-flash`).
-     - Enforces strict Pydantic JSON decoding (`TopOpportunity`, `QuickWin`, `WorkflowAssessment`).
-     - Includes a zero-crash heuristic rule engine fallback if API keys or network fail.
-  5. `export_engine.py`:
-     - **n8n Exporter:** Generates valid, importable n8n JSON nodes and connection trees.
-     - **Make.com Exporter:** Generates valid Make scenario blueprints.
-     - **Python Exporter:** Generates standalone executable async Python scripts with environment variables.
-  6. `pdf_engine.py`:
-     - Generates pixel-perfect executive PDF audit reports using headless printing or browser print fallback.
-
-### 3.3 Executive Dashboard (`/frontend`)
-- **Technology:** Next.js (App Router), Vanilla CSS Design System, Responsive layout.
-- **Deployment:** Vercel (`https://dead-time-b2b.vercel.app/`).
-- **Features & Tabs:**
-  - **Header & Stats Strip:** Global currency selector (INR, USD, GBP, EUR), editable hourly wage, real-time realized savings ticker, and multi-tenant organization selector (`org_id`).
-  - **Workflows Panel:** Ranked cards of discovered routines, sequence flow chips, confidence scores, and one-click "Generate Blueprint".
-  - **AI Insights Panel:** Gemini-generated executive pitch, top automation target with step-by-step implementation, quick wins, and risk assessments.
-  - **Blueprint Review Panel:** Human-in-the-Loop approval gateway (Approve, Reject, Deploy), interactive **Sandbox Dry-Run Modal** (simulating payload transformations without calling production APIs), and instant exports (n8n JSON, Make JSON, Python Script).
-  - **ROI Impact Tracker:** Before vs. After analytics comparing pre-automation baseline hours against active deployment logs.
-  - **Audit Trail Panel:** Granular inspection of reconstructed user sessions and raw telemetry event streams.
+### Phase 2: Automation Implementation & Continuity Retainer
+* **Goal:** Monetize the high-value findings from Phase 1 by implementing the recommended automations and providing continuous workflow governance.
+* **Deliverables:**
+  1. **Turnkey Automation Deployment:** Converting the generated Dead Time blueprints into live, production-grade workflows (n8n JSON scenarios, Make.com scenarios, or async Python worker scripts).
+  2. **Human-in-the-Loop Governance:** Sandboxed dry-run testing where operators inspect payload transformations before enabling live API writes.
+  3. **Continuous ROI Closed-Loop Verification:** Access to the Dead Time dashboard tracking before-vs-after manual hours, automation execution success rates, and verified realized savings.
+* **Pricing & Revenue Structure:**
+  - **Implementation Setup Fee:** **$1,000 – $3,500 (₹75,000 – ₹2,50,000)** flat fee per automated workflow package (typically 2–4 core cross-app loops).
+  - **Continuity SaaS Retainer:** **$199 – $499/month (or $19–$39/seat/month)** for continuous monitoring, drift detection (spotting when workflows break or change), monthly ROI reports, and new bottleneck discovery.
 
 ---
 
-## 4. Complete API Specification
+## 3. System Architecture & The 11 Functional Layers
 
-| HTTP Method | Route | Description | Layer |
+The platform is engineered into 11 distinct, decoupled functional layers spanning client browser, cloud API, pattern engines, and the executive UI:
+
+```
+┌───────────────────────────────────────────────────────────────────────────┐
+│ [Layer 1] Chrome MV3 Telemetry Extension (Private Pilot ZIP / Web Store)  │
+└─────────────────────────────────────┬─────────────────────────────────────┘
+                                      │ HTTP POST /events (Batched JSON)
+                                      ▼
+┌───────────────────────────────────────────────────────────────────────────┐
+│ [Layer 2] FastAPI Cloud Backend & Session Splitter (30-min Inactivity)   │
+└─────────────────────────────────────┬─────────────────────────────────────┘
+                                      │
+              ┌───────────────────────┴───────────────────────┐
+              ▼                                               ▼
+┌───────────────────────────────┐               ┌───────────────────────────┐
+│ [Layer 3] N-Gram Pattern      │               │ [Layer 4] Financial ROI   │
+│ Mining & Subsequence Matcher  │               │ Engine & Currency Matrix  │
+└─────────────┬─────────────────┘               └─────────────┬─────────────┘
+              └───────────────────────┬───────────────────────┘
+                                      ▼
+┌───────────────────────────────────────────────────────────────────────────┐
+│ [Layer 5] Gemini AI Executive Intelligence & Recommendation Engine        │
+└─────────────────────────────────────┬─────────────────────────────────────┘
+                                      ▼
+┌───────────────────────────────────────────────────────────────────────────┐
+│ [Layer 6] Blueprint Generator & Multi-Engine Exporter (n8n / Make / Py)   │
+└─────────────────────────────────────┬─────────────────────────────────────┘
+                                      ▼
+┌───────────────────────────────────────────────────────────────────────────┐
+│ [Layer 7] Human-in-the-Loop Review Gateway & Sandbox Dry-Run Simulator   │
+└─────────────────────────────────────┬─────────────────────────────────────┘
+                                      ▼
+┌───────────────────────────────────────────────────────────────────────────┐
+│ [Layer 8] Automation Execution Engine & Audit Trail                       │
+└─────────────────────────────────────┬─────────────────────────────────────┘
+                                      ▼
+┌───────────────────────────────────────────────────────────────────────────┐
+│ [Layer 9] Report Generator (Boardroom PDF & Standalone HTML)              │
+└─────────────────────────────────────┬─────────────────────────────────────┘
+                                      ▼
+┌───────────────────────────────────────────────────────────────────────────┐
+│ [Layer 10] Next.js 14 Multi-Tenant Dashboard (Live Cloud UI on Vercel)    │
+└─────────────────────────────────────┬─────────────────────────────────────┘
+                                      ▼
+┌───────────────────────────────────────────────────────────────────────────┐
+│ [Layer 11] Closed-Loop Realized ROI Tracker (Before vs After Verification)│
+└───────────────────────────────────────────────────────────────────────────┘
+```
+
+### Layer Breakdown
+* **Layer 1 (Ingestion):** Chrome Extension (Manifest V3) running a background service worker. Buffers tab transitions, window focus changes, and application domain switches.
+* **Layer 2 (Sessionization):** Ingests raw telemetry events into SQLite/PostgreSQL. Splits continuous event streams into distinct sessions based on a 30-minute inactivity threshold.
+* **Layer 3 (Pattern Recognition):** Algorithmic n-gram extraction (lengths 2 to 5) across reconstructed sessions. Identifies recurring sequential application transitions with confidence scoring.
+* **Layer 4 (Financial Quantification):** Extrapolates observed sample frequencies across a standard 7-day week and 48-week working year. Applies configurable worker hourly rates across global currencies (₹ INR, $ USD, £ GBP, € EUR).
+* **Layer 5 (AI Intelligence):** Synthesizes workflow briefs into Google Gemini prompts, returning structured analysis: top ROI opportunity, recommended automation tool, quick-hit operational wins, and payback timelines.
+* **Layer 6 (Blueprint Generation & Export):** Converts detected abstract patterns into concrete, executable automation templates for **n8n**, **Make.com**, and standalone **Python asyncio** scripts.
+* **Layer 7 (Human Governance & Dry-Run):** Enforces an approval state (`pending_review` $\to$ `approved` $\to$ `deployed`). Includes a simulated pipeline dry-run that tests transformations against mock data without writing to third-party APIs.
+* **Layer 8 (Execution Engine):** Triggers and manages local or webhook-based execution of approved blueprints, logging output, runtime, and status.
+* **Layer 9 (Reporting Engine):** Compiles executive summaries into downloadable, high-fidelity PDFs (via WeasyPrint / Chrome headless) and self-contained HTML briefs with one-click print styling.
+* **Layer 10 (Presentation Dashboard):** Modern Next.js 14 web application featuring multi-tenant organization switching, real-time KPI stats, workflow inspection, and interactive controls.
+* **Layer 11 (Closed-Loop Realized ROI):** Tracks post-deployment execution records against baseline historical hours, verifying realized hours saved and calculating exact ROI multipliers.
+
+---
+
+## 4. Data Models & Mathematical Formulations
+
+### Session Reconstruction Algorithm
+Given a sequence of events $E = \{e_1, e_2, \dots, e_n\}$ ordered chronologically by timestamp $t(e_i)$, a new session $S_k$ is instantiated whenever:
+$$t(e_{i}) - t(e_{i-1}) > \Delta t_{\text{threshold}} \quad \text{where } \Delta t_{\text{threshold}} = 30 \text{ minutes (1800 seconds)}$$
+
+### N-Gram Sequence Pattern Mining
+For each reconstructed session $S_k = (a_1, a_2, \dots, a_m)$ where $a_j$ represents the application identifier (e.g., `google_sheets` $\to$ `salesforce` $\to$ `slack`):
+1. Extract all sub-sequences of length $N \in [2, 5]$.
+2. Compute the frequency $F(p)$ of pattern $p$ across all distinct sessions.
+3. Filter out patterns appearing in fewer than $K_{\text{min}}$ sessions (default $K_{\text{min}} = 2$).
+4. Compute Pattern Confidence:
+$$\text{Confidence}(p) = \frac{\text{Sessions containing } p}{\text{Total reconstructed sessions}}$$
+
+### Financial & ROI Quantification Formulas
+
+#### 1. Weekly Extrapolation
+Given observation window $D_{\text{obs}}$ (in days) and observed occurrences $O(p)$ of pattern $p$:
+$$\text{Weekly Frequency } F_{\text{wk}}(p) = O(p) \times \left( \frac{7}{\max(D_{\text{obs}}, 1)} \right)$$
+
+#### 2. Weekly Time Loss
+Given average duration per pattern execution $\bar{T}(p)$ (in hours):
+$$\text{Weekly Hours } H_{\text{wk}}(p) = F_{\text{wk}}(p) \times \bar{T}(p)$$
+
+#### 3. Weekly & Annual Cost
+Given organization-configured hourly cost per worker $R_{\text{hr}}$:
+$$\text{Weekly Cost } C_{\text{wk}}(p) = H_{\text{wk}}(p) \times R_{\text{hr}}$$
+$$\text{Annual Cost } C_{\text{yr}}(p) = C_{\text{wk}}(p) \times 48 \text{ working weeks}$$
+
+#### 4. Recoverable Automation Savings
+Assuming a standard automated task eliminates 80% to 85% of manual labor time:
+$$\text{Annual Recoverable Savings } S_{\text{yr}}(p) = C_{\text{yr}}(p) \times 0.80$$
+
+#### 5. Realized ROI & Payback Period
+$$\text{Payback Period (Weeks)} = \frac{\text{Implementation Cost}}{\text{Weekly Recoverable Savings } S_{\text{wk}}}$$
+$$\text{Realized Weekly Savings} = (H_{\text{before}} - H_{\text{after}}) \times R_{\text{hr}}$$
+
+---
+
+## 5. Complete REST API Specification
+
+Base URL (Cloud Production): `https://dead-time-backend.onrender.com`  
+Local Development: `http://localhost:8002`
+
+| Method | Endpoint | Description | Request Body / Params |
 |---|---|---|---|
-| `POST` | `/events` | Ingests telemetry event from Chrome Extension | Layer 1 |
-| `GET` | `/events` | Lists raw events (filtered by `org_id` and `limit`) | Layer 1 |
-| `GET` | `/organizations` | Returns all unique active organization identifiers | Layer 1 |
-| `GET` | `/health` | System health check (used by UptimeRobot) | Meta |
-| `GET` | `/sessions` | Lists reconstructed work sessions | Layer 2 |
-| `GET` | `/workflows/detected` | Lists deterministic recurring workflow patterns | Layer 2 |
-| `GET` | `/workflows/summary` | Summary metrics of detected patterns | Layer 2 |
-| `GET` | `/workflows/brief` | Returns complete LLM-ready JSON intelligence brief | Layer 3 |
-| `GET` | `/workflows/report` | Renders a styled standalone HTML intelligence report | Layer 3 |
-| `GET` | `/workflows/report/pdf` | Downloads or prints the executive PDF report | Layer 3 |
-| `GET` | `/workflows/ai-analysis` | Returns Gemini structured recommendations | Layer 4 |
-| `POST` | `/blueprints/generate` | Generates an automation plan for a pattern ID | Layer 5 |
-| `GET` | `/blueprints` | Lists all generated blueprints and their approval status | Layer 5 |
-| `POST` | `/blueprints/{id}/review` | Approves or rejects a blueprint (`action: approve/reject`) | Layer 5 |
-| `POST` | `/blueprints/{id}/dry-run` | Simulates data payload transformations in sandbox | Layer 5 |
-| `GET` | `/blueprints/{id}/export/n8n` | Downloads ready-to-import n8n workflow JSON | Layer 5 |
-| `GET` | `/blueprints/{id}/export/make` | Downloads ready-to-import Make.com scenario JSON | Layer 5 |
-| `GET` | `/blueprints/{id}/export/python` | Downloads standalone async Python script | Layer 5 |
-| `POST` | `/engine/deploy/{id}` | Deploys an approved blueprint into production | Layer 6 |
-| `GET` | `/analytics/roi-impact` | Before vs. After realized financial savings report | Layer 7 |
-| `POST` | `/demo/seed` | Seeds rich enterprise demonstration dataset | Meta |
+| `POST` | `/events` | Ingests telemetry event from Chrome extension | `EventCreate` JSON |
+| `GET` | `/events` | List raw telemetry events | `limit: int`, `org_id: str` |
+| `GET` | `/organizations` | List unique client organizations | None |
+| `GET` | `/health` | Health check & active layer status | None |
+| `GET` | `/sessions` | View reconstructed worker sessions | `org_id: str` |
+| `GET` | `/workflows/detected` | Run pattern detection & list sequences | `org_id: str` |
+| `GET` | `/workflows/summary` | Aggregate telemetry KPIs | `org_id: str` |
+| `GET` | `/workflows/brief` | Full LLM-ready JSON intelligence brief | `hourly_rate`, `currency`, `symbol`, `org_id` |
+| `GET` | `/workflows/report` | Render standalone executive HTML report | `hourly_rate`, `currency`, `symbol`, `org_id` |
+| `GET` | `/workflows/report/pdf`| Download executive boardroom PDF report | `hourly_rate`, `currency`, `symbol`, `org_id` |
+| `GET` | `/workflows/ai-analysis`| Get Gemini-powered AI recommendations | `hourly_rate`, `currency`, `symbol`, `org_id` |
+| `POST` | `/blueprints/generate` | Auto-generate blueprint for pattern ID | `pattern_id: str` |
+| `GET` | `/blueprints` | List all automation blueprints | None |
+| `POST` | `/blueprints/{id}/review` | Human approval gate (`approve`/`reject`) | `{"action": "approve"}` |
+| `POST` | `/blueprints/{id}/dry-run`| Sandbox test against mock payload | `DryRunRequest` |
+| `GET` | `/blueprints/{id}/export/n8n` | Download ready-to-import n8n workflow | None |
+| `GET` | `/blueprints/{id}/export/make`| Download Make.com scenario JSON | None |
+| `GET` | `/blueprints/{id}/export/python`| Download standalone Python async script | None |
+| `POST` | `/engine/deploy/{id}` | Execute or trigger live deployment | None |
+| `GET` | `/analytics/roi-impact` | Before vs After realized ROI metrics | `hourly_rate`, `currency`, `symbol` |
 
 ---
 
-## 5. Deployment & Production Setup
+## 6. Component Deep Dive
 
-### Live Production Endpoints
-- **Frontend Dashboard:** `https://dead-time-b2b.vercel.app/`
-- **Backend API:** `https://dead-time-backend.onrender.com`
-- **Interactive Swagger Docs:** `https://dead-time-backend.onrender.com/docs`
-- **Health Check Monitor:** `https://dead-time-backend.onrender.com/health` (monitored by UptimeRobot every 5 mins to prevent free-tier spin-down).
+### A. Chrome Telemetry Extension (Manifest V3)
+* **Location:** `/extension`
+* **Core Files:**
+  - `manifest.json`: Defines permissions (`tabs`, `storage`, `idle`, `<all_urls>`).
+  - `background.js`: Service worker capturing `chrome.tabs.onActivated` and `chrome.tabs.onUpdated`. Resolves browser URLs to standard application tokens (`slack`, `jira`, `zendesk`, `notion`, `hubspot`, `google_sheets`, `salesforce`, `github`). Batches events and dispatches HTTP POST payloads to `https://dead-time-backend.onrender.com/events`.
+  - `popup.html` & `popup.js`: Displays real-time connection status (Online / Offline), cloud server health, and a direct link to the live Vercel dashboard.
 
-### Running Locally
-Run `start.bat` on Windows or:
+### B. FastAPI Python Backend & Algorithmic Engines
+* **Location:** `/backend`
+* **Core Engines:**
+  - `workflow_detector.py`: Session reconstruction and n-gram pattern mining algorithms.
+  - `roi_engine.py`: Currency conversions, labor extrapolation, and structured brief synthesis.
+  - `llm_engine.py`: Formats prompts and communicates with Google Gemini API (`gemini-1.5-flash` / `gemini-pro`).
+  - `blueprint_engine.py`: Synthesizes trigger apps, input fields, transformations, and destination actions into standardized blueprint schemas.
+  - `export_engine.py`: Converts blueprint schemas into native JSON import trees for **n8n** and **Make.com**, or compiles executable **Python asyncio** scripts using `httpx`.
+  - `automation_engine.py`: Sandboxed mock execution runner and deployment state manager.
+  - `pdf_engine.py`: Generates boardroom-quality PDF exports with fallback print styling.
+
+### C. Next.js 14 Executive Intelligence Dashboard
+* **Location:** `/frontend`
+* **Live URL:** `https://dead-time-b2b.vercel.app/`
+* **Key Features:**
+  - **Organization Switcher:** Dynamic dropdown filtering telemetry across client accounts (`org_default`, `org_demo`, `acme_corp`, etc.).
+  - **5 Primary Operational Panels:**
+    1. `Overview`: High-level summary of observed hours, sessions, and recoverable savings.
+    2. `Detected Workflows`: Visual breakdown of sequences, step transitions, frequency, and annual cost.
+    3. `Sessions`: Chronological reconstruction of employee work sessions and app switching.
+    4. `AI Insights`: Instant Gemini automation recommendations, tool rankings, and quick-win operational advice.
+    5. `Automation Blueprints & Exports`: Interactive review card with dry-run modal, one-click export buttons (n8n, Make, Python), and deploy triggers.
+    6. `ROI Impact Tracker`: Real-time before-vs-after savings tracker showing verified reclaimed hours and ROI percentages.
+
+---
+
+## 7. Cloud Deployment & Zero-Cost Infrastructure
+
+The entire platform is hosted on a high-availability, zero-maintenance, **100% free production tier**:
+
+| Component | Platform | URL / Configuration | Cost |
+|---|---|---|---|
+| **Backend API** | Render | `https://dead-time-backend.onrender.com` (Python 3.11, Uvicorn) | **$0.00 / month** (750 free hrs) |
+| **Frontend UI** | Vercel | `https://dead-time-b2b.vercel.app/` (Next.js 14 App Router) | **$0.00 / month** (Hobby Plan) |
+| **Cold-Start Preventer** | UptimeRobot | Pings `GET /health` every 5 minutes to keep Render container hot | **$0.00 / month** (Free tier) |
+| **Extension Client** | Local Browser | Unpacked ZIP for private enterprise pilots (zero Web Store fees) | **$0.00** |
+
+---
+
+## 8. Go-To-Market, Sales & Client Onboarding Playbook
+
+### Ideal Customer Profile (ICP)
+* **Company Size:** 5 to 50 employees (bypasses enterprise IT procurement bottlenecks).
+* **Target Roles:** Founder / CEO (boutique agencies), Chief Operating Officer (COO), VP of Operations, Head of RevOps.
+* **Target Verticals:**
+  1. **Digital Marketing & SEO Agencies:** Constant manual reporting between Google Sheets, GA4, Meta Ads, and client dashboards.
+  2. **Recruitment & Staffing Agencies:** Repetitive scraping between LinkedIn, email, and applicant tracking systems (ATS).
+  3. **E-commerce & Shopify Agencies:** Routine catalog management, inventory sync, and order exception handling.
+  4. **B2B Outbound Lead Gen Agencies:** Manual data transfers between Apollo, Clay, CRM, and email sequences.
+
+### Cold Outreach Script (LinkedIn / Email)
+> **Subject:** Quick question about [Company Name]’s internal ops / dead time
+>
+> Hi [First Name],
+>
+> Saw you’re scaling operations at [Company Name]. Typically, service and ops teams lose 15–25% of their working hours to repetitive "dead time" (copy-pasting between tabs, manual spreadsheet reconciliations, and CRM updates).
+>
+> We run a **free 3-day workflow efficiency audit**:
+> 1. Your team installs our lightweight telemetry extension for 3 business days.
+> 2. Our engine detects invisible cross-app bottlenecks without capturing sensitive data.
+> 3. We deliver a custom **Executive ROI Audit & Automation Blueprint** showing exactly which workflows you can automate and how much payroll you'll reclaim.
+>
+> Zero commitment, 100% free. Open to seeing what your team's workflow bottleneck map looks like?
+>
+> Best,  
+> [Your Name]
+
+### The White-Glove Onboarding Call (10 Minutes)
+1. **Screen Share:** Guide the client to unzip the extension folder, open `chrome://extensions`, enable *Developer mode*, and click *Load unpacked*.
+2. **Verify Badge:** Show the Dead Time extension badge switching to green **"Online"**.
+3. **Set the Expectation:** *"Let your team work completely normally for 3 business days. On Friday at 3 PM, we will open your live dashboard together and review your team's automation cost map."*
+
+---
+
+## 9. Security, Privacy & Compliance Guarantees
+
+Enterprise clients care deeply about privacy. Dead Time is engineered with a strict **Privacy-by-Design** posture:
+* **No Keystroke Logging:** The extension never captures keyboard input, keystroke timings, or clipboard buffers.
+* **No Screenshot or Video Capture:** No screen recording, DOM element scraping, or OCR occurs.
+* **No Password or Credential Interception:** Authentication forms, tokens, and cookies are explicitly excluded from telemetry.
+* **Domain-Level Abstraction:** URLs are stripped to core domain categories (e.g., `app.slack.com` is recorded as `slack`; query parameters, search strings, and private record IDs are discarded).
+* **Multi-Tenant Isolation:** All events, sessions, and briefs are keyed by `org_id` ensuring client data segregation.
+
+---
+
+## 10. Quick-Start Development Guide
+
+### 1. Local Backend Setup
 ```bash
-# Terminal 1: Backend
 cd backend
 python -m venv venv
-venv\Scripts\activate
+venv\Scripts\activate  # Windows: venv\Scripts\activate | Unix: source venv/bin/activate
 pip install -r requirements.txt
 uvicorn main:app --reload --port 8002
+```
+*Health Check:* `http://localhost:8002/health`
 
-# Terminal 2: Frontend
+### 2. Local Frontend Setup
+```bash
 cd frontend
 npm install
 npm run dev
-# Dashboard available at http://localhost:3000
 ```
+*Dashboard:* `http://localhost:3000`
 
-### Installing the Chrome Extension
-1. Open Google Chrome and navigate to `chrome://extensions`.
-2. Toggle on **Developer mode** (top right switch).
+### 3. Load Extension Locally
+1. Open Google Chrome and navigate to `chrome://extensions/`.
+2. Enable the **Developer mode** toggle in the top-right corner.
 3. Click **Load unpacked** and select the `dead-time-b2b/extension` folder.
-4. Click the Dead Time puzzle icon to verify the status indicator displays **Online**.
-
----
-
-## 6. Commercial Go-to-Market (GTM) Strategy
-
-### Target Market (Ideal Customer Profile)
-- **Company Size:** 5 to 50 employees (fast decision cycles without corporate IT hurdles).
-- **Target Roles:** Founder, CEO, COO, VP of Operations, Head of RevOps.
-- **Top Converting Sectors:**
-  1. Digital Marketing & SEO Agencies (reporting, keyword research, sheet syncing).
-  2. Recruiting & Staffing Firms (LinkedIn sourcing to ATS/CRM data entry).
-  3. E-commerce & Amazon/Shopify Agencies (order tracking, SKU updates, catalog sync).
-  4. B2B Lead Gen & Sales Development Agencies (lead enrichment and list building).
-
-### Sales Playbook: "The 3-Day Efficiency Audit"
-1. **The Hook:** Don't sell software or employee tracking. Offer a **Free 3-Day Workflow Efficiency Audit**.
-2. **The Pilot:** Client's team loads the extension ZIP for 3 business days.
-3. **The Presentation:** Open the live dashboard or export the PDF report showing the exact dollar amount lost per year to repetitive routines.
-4. **Monetization:**
-   - **Service / Retainer:** Charge $1,000–$3,000 to build the Make/n8n/Python automations generated by Dead Time.
-   - **Continuous SaaS:** Charge $99–$299/month for perpetual team monitoring and optimization discovery.
+4. Telemetry events will stream directly to the configured backend API.
