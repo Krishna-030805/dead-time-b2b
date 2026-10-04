@@ -119,7 +119,7 @@ export function AssessmentCard({ assessment }) {
   );
 }
 
-export default function AIInsightsPanel({ hourlyRate = 400, currency }) {
+export default function AIInsightsPanel({ hourlyRate = 400, currency, selectedOrg }) {
   const [state, setState] = useState('idle'); // idle | loading | success | error
   const [data, setData] = useState(null);
   const [errorMsg, setErrorMsg] = useState('');
@@ -128,7 +128,7 @@ export default function AIInsightsPanel({ hourlyRate = 400, currency }) {
     setState('loading');
     setErrorMsg('');
     try {
-      const d = await fetchAIAnalysis(hourlyRate, currency?.code, currency?.symbol);
+      const d = await fetchAIAnalysis(hourlyRate, currency?.code, currency?.symbol, selectedOrg);
       if (d.status === 'error') {
         setState('error');
         setErrorMsg(d.message || 'Strategic synthesis failed. Ensure API credentials are configured.');

@@ -64,7 +64,7 @@ export function SessionCard({ session }) {
   );
 }
 
-export default function SessionsPanel({ onCount }) {
+export default function SessionsPanel({ onCount, selectedOrg }) {
   const [sessions, setSessions] = useState([]);
 
   const onCountRef = useRef(onCount);
@@ -74,11 +74,11 @@ export default function SessionsPanel({ onCount }) {
 
   const load = useCallback(async () => {
     try {
-      const data = await fetchSessions();
+      const data = await fetchSessions(selectedOrg);
       setSessions(data);
       onCountRef.current?.(data.length);
     } catch {}
-  }, []);
+  }, [selectedOrg]);
 
   useEffect(() => {
     load();

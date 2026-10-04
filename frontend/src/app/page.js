@@ -117,6 +117,7 @@ export default function DashboardPage() {
           hourlyRate={hourlyRate}
           currency={currency}
           onRealizedSavings={setRealizedSavings}
+          selectedOrg={selectedOrg}
         />
 
         <TabBar
@@ -127,13 +128,13 @@ export default function DashboardPage() {
 
         {activeTab === 'workflows' && (
           <div className="panel" role="tabpanel">
-            <WorkflowsPanel onCount={handleWorkflowsCount} />
+            <WorkflowsPanel onCount={handleWorkflowsCount} selectedOrg={selectedOrg} />
           </div>
         )}
 
         {activeTab === 'ai' && (
           <div className="panel" role="tabpanel">
-            <AIInsightsPanel hourlyRate={hourlyRate} currency={currency} />
+            <AIInsightsPanel hourlyRate={hourlyRate} currency={currency} selectedOrg={selectedOrg} />
           </div>
         )}
 
@@ -149,6 +150,7 @@ export default function DashboardPage() {
               hourlyRate={hourlyRate}
               currency={currency.code}
               symbol={currency.symbol}
+              selectedOrg={selectedOrg}
             />
           </div>
         )}
@@ -158,6 +160,7 @@ export default function DashboardPage() {
             <AuditTrailPanel
               onEventsCount={handleEventsCount}
               onSessionsCount={handleSessionsCount}
+              selectedOrg={selectedOrg}
             />
           </div>
         )}

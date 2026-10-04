@@ -5,34 +5,39 @@ export const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:800
  * Every function returns a parsed JSON promise.
  */
 
-export async function fetchEvents(limit = 80) {
-  const res = await fetch(`${API_BASE}/events?limit=${limit}`, { cache: 'no-store' });
+export async function fetchEvents(limit = 80, orgId = null) {
+  const orgParam = orgId && orgId !== 'all' ? `&org_id=${encodeURIComponent(orgId)}` : '';
+  const res = await fetch(`${API_BASE}/events?limit=${limit}${orgParam}`, { cache: 'no-store' });
   if (!res.ok) throw new Error(`Events fetch failed: ${res.status}`);
   return res.json();
 }
 
-export async function fetchSessions() {
-  const res = await fetch(`${API_BASE}/sessions`, { cache: 'no-store' });
+export async function fetchSessions(orgId = null) {
+  const orgParam = orgId && orgId !== 'all' ? `?org_id=${encodeURIComponent(orgId)}` : '';
+  const res = await fetch(`${API_BASE}/sessions${orgParam}`, { cache: 'no-store' });
   if (!res.ok) throw new Error(`Sessions fetch failed: ${res.status}`);
   return res.json();
 }
 
-export async function fetchWorkflows() {
-  const res = await fetch(`${API_BASE}/workflows/detected`, { cache: 'no-store' });
+export async function fetchWorkflows(orgId = null) {
+  const orgParam = orgId && orgId !== 'all' ? `?org_id=${encodeURIComponent(orgId)}` : '';
+  const res = await fetch(`${API_BASE}/workflows/detected${orgParam}`, { cache: 'no-store' });
   if (!res.ok) throw new Error(`Workflows fetch failed: ${res.status}`);
   return res.json();
 }
 
-export async function fetchBrief(hourlyRate = 400, currency = 'INR', symbol = '₹') {
+export async function fetchBrief(hourlyRate = 400, currency = 'INR', symbol = '₹', orgId = null) {
   const encSymbol = encodeURIComponent(symbol);
-  const res = await fetch(`${API_BASE}/workflows/brief?hourly_rate=${hourlyRate}&currency=${currency}&symbol=${encSymbol}`, { cache: 'no-store' });
+  const orgParam = orgId && orgId !== 'all' ? `&org_id=${encodeURIComponent(orgId)}` : '';
+  const res = await fetch(`${API_BASE}/workflows/brief?hourly_rate=${hourlyRate}&currency=${currency}&symbol=${encSymbol}${orgParam}`, { cache: 'no-store' });
   if (!res.ok) throw new Error(`Brief fetch failed: ${res.status}`);
   return res.json();
 }
 
-export async function fetchAIAnalysis(hourlyRate = 400, currency = 'INR', symbol = '₹') {
+export async function fetchAIAnalysis(hourlyRate = 400, currency = 'INR', symbol = '₹', orgId = null) {
   const encSymbol = encodeURIComponent(symbol);
-  const res = await fetch(`${API_BASE}/workflows/ai-analysis?hourly_rate=${hourlyRate}&currency=${currency}&symbol=${encSymbol}`, { cache: 'no-store' });
+  const orgParam = orgId && orgId !== 'all' ? `&org_id=${encodeURIComponent(orgId)}` : '';
+  const res = await fetch(`${API_BASE}/workflows/ai-analysis?hourly_rate=${hourlyRate}&currency=${currency}&symbol=${encSymbol}${orgParam}`, { cache: 'no-store' });
   if (!res.ok) throw new Error(`AI analysis fetch failed: ${res.status}`);
   return res.json();
 }

@@ -9,7 +9,7 @@ function esc(s) {
   return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
-export default function EventsPanel({ onCount }) {
+export default function EventsPanel({ onCount, selectedOrg }) {
   const [events, setEvents] = useState([]);
   const [lastRefresh, setLastRefresh] = useState('');
   const [selectedUser, setSelectedUser] = useState('');
@@ -21,12 +21,12 @@ export default function EventsPanel({ onCount }) {
 
   const load = useCallback(async () => {
     try {
-      const data = await fetchEvents(80);
+      const data = await fetchEvents(80, selectedOrg);
       setEvents(data);
       onCountRef.current?.(data.length);
       setLastRefresh(new Date().toLocaleTimeString());
     } catch {}
-  }, []);
+  }, [selectedOrg]);
 
   useEffect(() => {
     load();

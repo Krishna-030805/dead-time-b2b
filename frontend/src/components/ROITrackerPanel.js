@@ -88,6 +88,7 @@ export default function ROITrackerPanel({
   hourlyRate = 400,
   currency = 'INR',
   symbol = '₹',
+  selectedOrg,
 }) {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -98,8 +99,9 @@ export default function ROITrackerPanel({
     setError('');
     try {
       const enc = encodeURIComponent(symbol);
+      const orgParam = selectedOrg && selectedOrg !== 'all' ? `&org_id=${encodeURIComponent(selectedOrg)}` : '';
       const res = await fetch(
-        `${API_BASE}/analytics/roi-impact?hourly_rate=${hourlyRate}&currency=${currency}&symbol=${enc}`
+        `${API_BASE}/analytics/roi-impact?hourly_rate=${hourlyRate}&currency=${currency}&symbol=${enc}${orgParam}`
       );
       if (!res.ok) throw new Error('Failed to load ROI telemetry data');
       setData(await res.json());
@@ -108,7 +110,7 @@ export default function ROITrackerPanel({
     } finally {
       setLoading(false);
     }
-  }, [hourlyRate, currency, symbol]);
+  }, [hourlyRate, currency, symbol, selectedOrg]);
 
   useEffect(() => {
     fetchROI();

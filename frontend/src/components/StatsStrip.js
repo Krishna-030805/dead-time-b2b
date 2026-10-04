@@ -34,12 +34,13 @@ export default function StatsStrip({
   hourlyRate = 400,
   currency = { symbol: '₹', code: 'INR' },
   onRealizedSavings,
+  selectedOrg,
 }) {
   const [stats, setStats] = useState(null);
 
   const load = useCallback(async () => {
     try {
-      const d = await fetchBrief(hourlyRate, currency.code, currency.symbol);
+      const d = await fetchBrief(hourlyRate, currency.code, currency.symbol, selectedOrg);
       const ex = d.executive_summary || {};
 
       let realizedLabel = `${currency.symbol}0/yr`;

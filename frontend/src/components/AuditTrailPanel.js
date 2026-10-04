@@ -6,7 +6,7 @@ import EventsPanel from './EventsPanel';
 import SessionsPanel from './SessionsPanel';
 import { ActivityIcon, FolderIcon } from './Icons';
 
-export default function AuditTrailPanel({ onEventsCount, onSessionsCount }) {
+export default function AuditTrailPanel({ onEventsCount, onSessionsCount, selectedOrg }) {
   const [activeSubTab, setActiveSubTab] = useState('events');
 
   return (
@@ -45,9 +45,9 @@ export default function AuditTrailPanel({ onEventsCount, onSessionsCount }) {
 
       <div className={styles.content}>
         {activeSubTab === 'events' ? (
-          <EventsPanel onCount={onEventsCount} />
+          <EventsPanel onCount={onEventsCount} selectedOrg={selectedOrg} />
         ) : (
-          <SessionsPanel onCount={onSessionsCount} />
+          <SessionsPanel onCount={onSessionsCount} selectedOrg={selectedOrg} />
         )}
       </div>
     </div>

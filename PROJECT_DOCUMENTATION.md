@@ -345,3 +345,33 @@ npm run dev
 2. Enable the **Developer mode** toggle in the top-right corner.
 3. Click **Load unpacked** and select the `dead-time-b2b/extension` folder.
 4. Telemetry events will stream directly to the configured backend API.
+
+---
+
+## 11. Multi-Tenant Fleet Administration (Architecture & Roadmap)
+
+### Concept: Private Admin Directory (`/admin`)
+To manage dozens of pilot audits simultaneously without exposing client identities during screen shares, the platform adopts a strict two-tier interface model:
+
+```
+┌──────────────────────────────────────────────────────────────┐
+│  OPERATOR PRIVATE CONSOLE (/admin)                           │
+│  - Internal use only (protected by admin secret)             │
+│  - Directory of all pilot clients (Acme, Nike, Apex, etc.)   │
+│  - Telemetry volume, last active signal, workflow count      │
+│  - 1-click launcher for each client's isolated workspace     │
+└───────────────────────────────┬──────────────────────────────┘
+                                │ Launches dedicated audit
+                                ▼
+┌──────────────────────────────────────────────────────────────┐
+│  ISOLATED CLIENT WORKSPACE (/?org=client_slug)               │
+│  - Safe for live client screen-sharing and presentations     │
+│  - Scoped strictly to that client's events and workflows     │
+│  - Zero competitor dropdowns or external client leakage      │
+└──────────────────────────────────────────────────────────────┘
+```
+
+### Key Rules:
+1. **Org Code Authority:** The platform owner assigns the organization identifier (e.g. `apex_marketing`) during client onboarding and pre-populates it in the pilot ZIP.
+2. **Client Link Delivery:** The client receives a direct, isolated audit URL (`https://dead-time-b2b.vercel.app/?org=apex_marketing`).
+3. **Admin Centralization:** The operator monitors all active pilots from their private `/admin` dashboard.

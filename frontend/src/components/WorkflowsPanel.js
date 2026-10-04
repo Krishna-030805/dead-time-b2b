@@ -120,7 +120,7 @@ export function WorkflowCard({ workflow, onGenerate, isGenerating }) {
   );
 }
 
-export default function WorkflowsPanel({ onCount }) {
+export default function WorkflowsPanel({ onCount, selectedOrg }) {
   const [workflows, setWorkflows] = useState([]);
   const [generating, setGenerating] = useState(null);
   const { showToast } = useToast();
@@ -132,11 +132,15 @@ export default function WorkflowsPanel({ onCount }) {
 
   const load = useCallback(async () => {
     try {
-      const data = await fetchWorkflows();
+      const data = await fetchWorkflows(selectedOrg);
       setWorkflows(data);
       onCountRef.current?.(data.length);
     } catch {}
-  }, []);
+  }, [selectedOrg]);
+
+  useEffect(() => {
+    load();
+  }, [load]);
 
   const handleGenerateBlueprint = async (patternId) => {
     try {
