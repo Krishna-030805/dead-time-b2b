@@ -68,33 +68,45 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
   const activeSession = getActiveSessionId();
 
-  Promise.all([getUserId(), getOrgId()]).then(([userId, orgId]) => {
-    const payload = {
-      org_id:      orgId,
-      user_id:     userId,
-      timestamp:   request.data.timestamp,
-      application: request.data.application,
-      action_type: request.data.action_type,
-      object_type: request.data.object_type  || null,
-      object_id:   request.data.object_id   || null,
-      session_id:  activeSession,
-      metadata: {
-        url:           request.data.url,
-        title:         request.data.title,
-        dwell_seconds: request.data.dwell_seconds || null,
-      }
-    };
+  chrome.storage.local.get(["telemetry_paused"]).then((storage) => {
+    if (storage.telemetry_paused) {
+      return;
+    }
 
-    console.log(`[Dead Time] [${orgId}/${userId}] →`, payload.application, payload.action_type, payload.object_id);
+    Promise.all([getUserId(), getOrgId()]).then(([userId, orgId]) => {
+      const payload = {
+        org_id:      orgId,
+        user_id:     userId,
+        timestamp:   request.data.timestamp,
+        application: request.data.application,
+        action_type: request.data.action_type,
+        object_type: request.data.object_type  || null,
+        object_id:   null, // Stripped for privacy
+        session_id:  activeSession,
+        metadata: {
+          app_token:     request.data.application,
+          dwell_seconds: request.data.dwell_seconds || null,
+        }
+      };
 
-    fetch(API_URL, {
-      method:  "POST",
-      headers: { "Content-Type": "application/json" },
-      body:    JSON.stringify(payload)
-    })
-      .then(res => res.json())
-      .then(data => console.log("[Dead Time] Saved event_id:", data.event_id))
-      .catch(err => console.warn("[Dead Time] Failed to send event:", err.message));
+      console.log(`[Dead Time] [${orgId}/${userId}] →`, payload.application, payload.action_type);
+
+      chrome.storage.local.get(["ingest_token"]).then((tok) => {
+        const headers = { "Content-Type": "application/json" };
+        if (tok.ingest_token) {
+          headers["Authorization"] = `Bearer ${tok.ingest_token}`;
+        }
+
+        fetch(API_URL, {
+          method:  "POST",
+          headers: headers,
+          body:    JSON.stringify(payload)
+        })
+          .then(res => res.json())
+          .then(data => console.log("[Dead Time] Saved event_id:", data.event_id))
+          .catch(err => console.warn("[Dead Time] Failed to send event:", err.message));
+      });
+    });
   });
 
   return true; // keep message channel open for async

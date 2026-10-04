@@ -145,10 +145,13 @@ def calculate_roi(
             "annual_cost_label":          f"{currency_symbol}{annual_cost:,.0f}/year",
             "annual_hours":               annual_hours,
             "annual_hours_label":         f"{annual_hours:.0f} hrs/year",
-            "automation_savings_pct":     80,  # conservative estimate for knowledge-work automation
-            "automatable_hours_per_year":  round(annual_hours * 0.80, 1),
-            "automatable_cost_per_year":   round(annual_cost  * 0.80, 2),
-            "automatable_cost_label":      f"{currency_symbol}{annual_cost * 0.80:,.0f} recoverable/year",
+            "automation_savings_pct":              80,   # optimal scenario
+            "automation_savings_conservative_pct": 50,   # conservative baseline
+            "automatable_hours_per_year":          round(annual_hours * 0.80, 1),
+            "automatable_cost_per_year":           round(annual_cost  * 0.80, 2),
+            "automatable_cost_conservative":       round(annual_cost  * 0.50, 2),
+            "automatable_cost_label":              f"{currency_symbol}{annual_cost * 0.50:,.0f} – {currency_symbol}{annual_cost * 0.80:,.0f}/yr",
+            "status_label":                        "Candidate Workflow",
         },
     }
 
@@ -269,7 +272,8 @@ def build_intelligence_brief(
     # ── Aggregate financials ──────────────────────────────────────────────────
     total_weekly_cost  = sum(p["roi"]["weekly_cost"]  for p in enriched)
     total_annual_cost  = sum(p["roi"]["annual_cost"]  for p in enriched)
-    total_recover_yr   = sum(p["roi"]["automatable_cost_per_year"] for p in enriched)
+    total_recover_opt  = sum(p["roi"]["automatable_cost_per_year"] for p in enriched)
+    total_recover_cons = sum(p["roi"]["automatable_cost_conservative"] for p in enriched)
     total_weekly_hrs   = summary.get("total_time_mapped_minutes", 0) / 60
     high_opps          = [p for p in enriched if p.get("opportunity_tier") == "high"]
     top_pattern        = enriched[0] if enriched else None
@@ -300,7 +304,8 @@ def build_intelligence_brief(
             "currency_symbol":                currency_symbol,
             "weekly_cost_across_workflows":   f"{currency_symbol}{total_weekly_cost:,.0f}",
             "annual_cost_across_workflows":   f"{currency_symbol}{total_annual_cost:,.0f}",
-            "recoverable_annually":           f"{currency_symbol}{total_recover_yr:,.0f}",
+            "recoverable_annually_range":     f"{currency_symbol}{total_recover_cons:,.0f} – {currency_symbol}{total_recover_opt:,.0f}",
+            "recoverable_annually":           f"{currency_symbol}{total_recover_cons:,.0f} – {currency_symbol}{total_recover_opt:,.0f}",
             "high_priority_opportunities":    len(high_opps),
             "top_opportunity": {
                 "name":           top_pattern["name"]                     if top_pattern else None,

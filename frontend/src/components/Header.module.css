@@ -113,20 +113,12 @@
   font-size: 0.85rem;
 }
 
-.clientSelect {
-  background: transparent;
-  border: none;
+.clientBadgeText {
   color: #c7d2fe;
   font-size: 0.72rem;
   font-weight: 600;
-  outline: none;
-  cursor: pointer;
   letter-spacing: 0.02em;
-}
-
-.clientSelect option {
-  background: #0d1117;
-  color: #fff;
+  white-space: nowrap;
 }
 
 .btn {

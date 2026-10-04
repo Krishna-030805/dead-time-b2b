@@ -31,7 +31,7 @@ MIN_SESSION_EVENTS: int = 2         # sessions with fewer events are discarded
 MIN_PATTERN_FREQUENCY: int = 2      # patterns seen fewer times are discarded
 MIN_NGRAM_LENGTH: int = 2           # shortest pattern we care about
 MAX_NGRAM_LENGTH: int = 6           # longest pattern we care about
-WEEKLY_EXTRAPOLATION_DAYS: int = 7  # window for "per week" projection
+WEEKLY_EXTRAPOLATION_DAYS: int = 5  # window for active business days projection (Mon-Fri)
 
 # Automation opportunity thresholds (total_time_hours_per_week)
 OPPORTUNITY_HIGH_HOURS: float = 3.0
@@ -375,6 +375,13 @@ class WorkflowDetector:
                 1 for p in patterns if p.opportunity_tier == "medium"
             ),
         }
+
+        # Pseudonymize employee identities to anonymous seats (e.g. "Seat 1", "Seat 2")
+        # to ensure privacy and prevent individual surveillance perception
+        unique_users = sorted(list({s.user_id for s in sessions}))
+        user_to_seat = {u: f"Seat {i+1}" for i, u in enumerate(unique_users)}
+        for s in sessions:
+            s.user_id = user_to_seat.get(s.user_id, s.user_id)
 
         return {
             "sessions": [_session_to_dict(s) for s in sessions],

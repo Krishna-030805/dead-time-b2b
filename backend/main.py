@@ -21,10 +21,11 @@ GET  /workflows/ai-analysis    Gemini-powered automation recommendations (Layer 
 GET  /                         4-tab visual intelligence dashboard"""
 
 import json
+import os
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
-from fastapi import Depends, FastAPI, Query
+from fastapi import Depends, FastAPI, Query, Header, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, JSONResponse, Response
 from pydantic import BaseModel
@@ -125,8 +126,22 @@ class EventCreate(BaseModel):
 
 # ─── Layer 1: Event Ingestion ──────────────────────────────────────────────────
 
+INGEST_TOKEN = os.environ.get("DEADTIME_INGEST_TOKEN")
+
+def verify_ingest_token(authorization: Optional[str] = Header(None)):
+    """Validates Authorization: Bearer <token> if DEADTIME_INGEST_TOKEN is set in environment."""
+    if INGEST_TOKEN:
+        expected = f"Bearer {INGEST_TOKEN}"
+        if not authorization or (authorization != expected and authorization != INGEST_TOKEN):
+            raise HTTPException(status_code=401, detail="Invalid or missing ingestion authorization token")
+    return True
+
 @app.post("/events", tags=["Layer 1 — Ingestion"])
-def create_event(event: EventCreate, db: Session = Depends(get_db)):
+def create_event(
+    event: EventCreate, 
+    db: Session = Depends(get_db),
+    _auth: bool = Depends(verify_ingest_token),
+):
     ts = event.timestamp
     if ts.tzinfo is not None:
         import datetime

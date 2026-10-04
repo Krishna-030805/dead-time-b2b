@@ -35,21 +35,14 @@ export default function Header({
       </div>
 
       <div className={styles.right}>
-        {/* Client Organization Selector */}
-        <div className={styles.clientSelectorWrap} title="Active Client Organization Filter">
+        {/* Scoped Client Workspace (Zero leakage of other client names on screen share) */}
+        <div className={styles.clientSelectorWrap} title="Active Audit Workspace">
           <span className={styles.clientIcon}>🏢</span>
-          <select
-            className={styles.clientSelect}
-            value={selectedOrg}
-            onChange={(e) => onOrgChange?.(e.target.value)}
-          >
-            <option value="all">All Clients (Consolidated)</option>
-            {organizations.map((org) => (
-              <option key={org} value={org}>
-                {org === 'org_default' ? 'Default Client' : org.replace(/^org_/, '').replace(/_/g, ' ').toUpperCase()}
-              </option>
-            ))}
-          </select>
+          <span className={styles.clientBadgeText}>
+            {selectedOrg && selectedOrg !== 'all' && selectedOrg !== 'org_default'
+              ? `Workspace: ${selectedOrg.replace(/^org_/, '').replace(/_/g, ' ').toUpperCase()}`
+              : 'Audit Workspace'}
+          </span>
         </div>
 
         {/* Realized savings badge — shown only when automations are deployed */}

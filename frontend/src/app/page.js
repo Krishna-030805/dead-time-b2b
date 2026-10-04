@@ -23,6 +23,17 @@ export default function DashboardPage() {
   const [selectedOrg, setSelectedOrg] = useState('all');
   const [organizations, setOrganizations] = useState(['org_default']);
 
+  // Read ?org= or ?org_id= from URL to isolate client workspace on screen-share
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const orgParam = params.get('org') || params.get('org_id');
+      if (orgParam) {
+        setSelectedOrg(orgParam);
+      }
+    }
+  }, []);
+
   // Fetch client organizations
   useEffect(() => {
     fetch(`${API_BASE}/organizations`)

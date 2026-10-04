@@ -170,9 +170,10 @@ $$\text{Confidence}(p) = \frac{\text{Sessions containing } p}{\text{Total recons
 
 ### Financial & ROI Quantification Formulas
 
-#### 1. Weekly Extrapolation
-Given observation window $D_{\text{obs}}$ (in days) and observed occurrences $O(p)$ of pattern $p$:
-$$\text{Weekly Frequency } F_{\text{wk}}(p) = O(p) \times \left( \frac{7}{\max(D_{\text{obs}}, 1)} \right)$$
+#### 1. Weekly Extrapolation (5 Active Business Days)
+Given observation window $D_{\text{obs}}$ (active business days) and observed occurrences $O(p)$ of candidate pattern $p$:
+$$\text{Weekly Frequency } F_{\text{wk}}(p) = O(p) \times \left( \frac{5}{\max(D_{\text{obs}}, 1)} \right)$$
+*(Note: Extrapolating against 5 business days rather than 7 calendar days ensures labor estimates reflect actual working workweeks without inflating hours).*
 
 #### 2. Weekly Time Loss
 Given average duration per pattern execution $\bar{T}(p)$ (in hours):
@@ -183,12 +184,13 @@ Given organization-configured hourly cost per worker $R_{\text{hr}}$:
 $$\text{Weekly Cost } C_{\text{wk}}(p) = H_{\text{wk}}(p) \times R_{\text{hr}}$$
 $$\text{Annual Cost } C_{\text{yr}}(p) = C_{\text{wk}}(p) \times 48 \text{ working weeks}$$
 
-#### 4. Recoverable Automation Savings
-Assuming a standard automated task eliminates 80% to 85% of manual labor time:
-$$\text{Annual Recoverable Savings } S_{\text{yr}}(p) = C_{\text{yr}}(p) \times 0.80$$
+#### 4. Recoverable Automation Savings Range
+Rather than assuming a flat percentage, Dead Time reports a conservative-to-optimal bandwidth across candidate workflows:
+$$\text{Conservative Annual Recovery (50%)} = C_{\text{yr}}(p) \times 0.50$$
+$$\text{Optimal Annual Recovery (80%)} = C_{\text{yr}}(p) \times 0.80$$
 
 #### 5. Realized ROI & Payback Period
-$$\text{Payback Period (Weeks)} = \frac{\text{Implementation Cost}}{\text{Weekly Recoverable Savings } S_{\text{wk}}}$$
+$$\text{Payback Period (Weeks)} = \frac{\text{Implementation Cost}}{\text{Conservative Weekly Savings } S_{\text{wk, cons}}}$$
 $$\text{Realized Weekly Savings} = (H_{\text{before}} - H_{\text{after}}) \times R_{\text{hr}}$$
 
 ---
@@ -306,14 +308,15 @@ The entire platform is hosted on a high-availability, zero-maintenance, **100% f
 
 ---
 
-## 9. Security, Privacy & Compliance Guarantees
+## 9. Security & Privacy Design
 
-Enterprise clients care deeply about privacy. Dead Time is engineered with a strict **Privacy-by-Design** posture:
-* **No Keystroke Logging:** The extension never captures keyboard input, keystroke timings, or clipboard buffers.
-* **No Screenshot or Video Capture:** No screen recording, DOM element scraping, or OCR occurs.
-* **No Password or Credential Interception:** Authentication forms, tokens, and cookies are explicitly excluded from telemetry.
-* **Domain-Level Abstraction:** URLs are stripped to core domain categories (e.g., `app.slack.com` is recorded as `slack`; query parameters, search strings, and private record IDs are discarded).
-* **Multi-Tenant Isolation:** All events, sessions, and briefs are keyed by `org_id` ensuring client data segregation.
+Enterprise and agency clients care deeply about privacy and avoiding "bossware" perceptions. Dead Time is engineered with a strict **Privacy-by-Design** posture:
+* **In-Browser URL Stripping:** The Chrome extension strips raw URLs and page titles before transmission. The backend receives only standardized application tokens (`slack`, `jira`, `google_sheets`) and duration, never sensitive document names, search queries, or internal customer URLs.
+* **Seat Pseudonymization (Anti-Surveillance):** Employee IDs are dynamically mapped to anonymous `"Seat 1"`, `"Seat 2"` identifiers in the dashboard. Management sees team workflow patterns without tracking or penalizing individual workers.
+* **Employee Pause Toggle (Private Mode):** The extension popup provides a 1-click **Pause Telemetry** button, allowing workers to pause tracking during personal browsing or sensitive tasks.
+* **No Keystroke or Screen Capture:** Zero keystrokes, zero form inputs, zero clipboard inspection, zero screenshots, and zero audio/video recording.
+* **Isolated Client Screen Shares:** Client dashboards are isolated by workspace (`?org=client_name`), ensuring no competitor or other client names are ever visible during live calls.
+* **Bearer Token Ingest Authorization:** Ingestion endpoint supports `Authorization: Bearer <token>` guarded by `DEADTIME_INGEST_TOKEN`.
 
 ---
 

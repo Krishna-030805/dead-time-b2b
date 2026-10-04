@@ -37,6 +37,39 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  // Telemetry Pause/Resume Toggle
+  const btnToggle = document.getElementById('btn-toggle-telemetry');
+  const telemetryBadge = document.getElementById('telemetry-status');
+
+  function updateTelemetryUI(isPaused) {
+    if (isPaused) {
+      telemetryBadge.textContent = 'Paused';
+      telemetryBadge.className = 'status-badge offline';
+      btnToggle.textContent = '▶️ Resume Telemetry';
+      btnToggle.style.background = '#065f46';
+      btnToggle.style.borderColor = '#10b981';
+    } else {
+      telemetryBadge.textContent = 'Active';
+      telemetryBadge.className = 'status-badge online';
+      btnToggle.textContent = '⏸️ Pause Telemetry (Private Mode)';
+      btnToggle.style.background = '#312e81';
+      btnToggle.style.borderColor = '#4f46e5';
+    }
+  }
+
+  chrome.storage.local.get(['telemetry_paused'], (res) => {
+    updateTelemetryUI(Boolean(res.telemetry_paused));
+  });
+
+  btnToggle.addEventListener('click', () => {
+    chrome.storage.local.get(['telemetry_paused'], (res) => {
+      const nextState = !res.telemetry_paused;
+      chrome.storage.local.set({ telemetry_paused: nextState }, () => {
+        updateTelemetryUI(nextState);
+      });
+    });
+  });
+
   // Check backend health
   fetch('https://dead-time-backend.onrender.com/health')
     .then(r => r.json())
