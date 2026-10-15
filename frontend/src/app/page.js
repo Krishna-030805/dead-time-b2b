@@ -140,7 +140,7 @@ export default function DashboardPage() {
 
         {activeTab === 'blueprints' && (
           <div className="panel" role="tabpanel">
-            <BlueprintReviewPanel onCount={handleBlueprintsCount} />
+            <BlueprintReviewPanel onCount={handleBlueprintsCount} selectedOrg={selectedOrg} />
           </div>
         )}
 

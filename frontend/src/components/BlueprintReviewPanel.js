@@ -168,7 +168,7 @@ export function BlueprintCard({
   );
 }
 
-export default function BlueprintReviewPanel({ onCount }) {
+export default function BlueprintReviewPanel({ onCount, selectedOrg }) {
   const [blueprints, setBlueprints] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -185,7 +185,8 @@ export default function BlueprintReviewPanel({ onCount }) {
     try {
       if (isInitial) setLoading(true);
       setError('');
-      const res = await fetch(`${API_BASE}/blueprints`);
+      const orgParam = selectedOrg && selectedOrg !== 'all' ? `?org_id=${encodeURIComponent(selectedOrg)}` : '';
+      const res = await fetch(`${API_BASE}/blueprints${orgParam}`);
       if (!res.ok) throw new Error('Failed to fetch blueprints');
       const data = await res.json();
       setBlueprints(data);
@@ -195,7 +196,7 @@ export default function BlueprintReviewPanel({ onCount }) {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [selectedOrg]);
 
   useEffect(() => {
     fetchBlueprints(true);

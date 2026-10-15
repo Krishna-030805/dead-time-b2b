@@ -68,7 +68,28 @@ app.add_middleware(
 detector = WorkflowDetector()
 
 
-# â”€â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+@app.on_event("startup")
+def init_demo_datasets():
+    """Ensure standard demo datasets exist on startup so live demos work immediately on Render."""
+    try:
+        from database import SessionLocal
+        db = SessionLocal()
+        # Seed enterprise demo if missing
+        has_enterprise = db.query(models.Event).filter(models.Event.org_id == "org_enterprise_demo").first()
+        if not has_enterprise:
+            from seed_demo import seed_enterprise_demo
+            seed_enterprise_demo()
+        # Seed agency demo if missing
+        has_agency = db.query(models.Event).filter(models.Event.org_id == "org_agency_demo").first()
+        if not has_agency:
+            from seed_agency import seed_agency_demo
+            seed_agency_demo()
+        db.close()
+    except Exception as e:
+        print(f"[Startup Warning] Could not auto-seed demo datasets: {e}")
+
+
+# ─── Helpers ──────────────────────────────────────────────────────────────────
 
 def _to_raw(db_events) -> List[RawEvent]:
     out = []
@@ -346,9 +367,12 @@ def generate_blueprint(pattern_id: str, db: Session = Depends(get_db)):
     
     return {"status": "success", "blueprint": db_blueprint.id, "data": bp_data}
 
-@app.get("/blueprints", tags=["Layer 5 â€” Blueprinting"])
-def list_blueprints(db: Session = Depends(get_db)):
-    bps = db.query(models.AutomationBlueprint).order_by(models.AutomationBlueprint.created_at.desc()).all()
+@app.get("/blueprints", tags=["Layer 5 — Blueprinting"])
+def list_blueprints(org_id: Optional[str] = Query(None), db: Session = Depends(get_db)):
+    query = db.query(models.AutomationBlueprint)
+    if org_id and org_id != "all":
+        query = query.filter(models.AutomationBlueprint.org_id == org_id)
+    bps = query.order_by(models.AutomationBlueprint.created_at.desc()).all()
     return [{
         "id": b.id,
         "pattern_id": b.pattern_id,
@@ -995,6 +1019,14 @@ def trigger_seed_demo():
     """Reset and seed enterprise demonstration dataset."""
     from seed_demo import seed_enterprise_demo
     result = seed_enterprise_demo()
+    return JSONResponse(content=result)
+
+
+@app.post("/demo/seed-agency", tags=["Meta"])
+def trigger_seed_agency():
+    """Reset and seed digital marketing agency demonstration dataset."""
+    from seed_agency import seed_agency_demo
+    result = seed_agency_demo()
     return JSONResponse(content=result)
 
 
