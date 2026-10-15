@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import styles from './AIInsightsPanel.module.css';
 import { fetchAIAnalysis } from '@/lib/api';
 import {
@@ -124,6 +124,13 @@ export default function AIInsightsPanel({ hourlyRate = 400, currency, selectedOr
   const [data, setData] = useState(null);
   const [errorMsg, setErrorMsg] = useState('');
 
+  // Reset insights whenever the selected organization or core parameters change
+  useEffect(() => {
+    setState('idle');
+    setData(null);
+    setErrorMsg('');
+  }, [selectedOrg, hourlyRate, currency?.code]);
+
   async function generate() {
     setState('loading');
     setErrorMsg('');
@@ -136,7 +143,7 @@ export default function AIInsightsPanel({ hourlyRate = 400, currency, selectedOr
       }
       if (d.status === 'no_patterns') {
         setState('error');
-        setErrorMsg(d.message || 'No workflow patterns detected yet.');
+        setErrorMsg(d.message || 'No workflow patterns detected for this organization yet.');
         return;
       }
       setData(d);
@@ -156,13 +163,13 @@ export default function AIInsightsPanel({ hourlyRate = 400, currency, selectedOr
         </div>
         <h3>Synthesize Executive Strategic Assessment</h3>
         <p>
-          Translates passive telemetry findings into an executive-ready business case:
+          Translates passive telemetry findings for <strong>{selectedOrg || 'Default Organization'}</strong> into an executive-ready business case:
           ranks top automation opportunities, calculates capital payback periods, and generates
           immediate zero-cost workflow optimizations.
         </p>
         <button type="button" className={styles.generateBtn} onClick={generate}>
           <ZapIcon size={14} />
-          <span>Generate Strategic Assessment</span>
+          <span>Generate Strategic Assessment ({selectedOrg || 'All'})</span>
         </button>
       </div>
     );
@@ -204,7 +211,12 @@ export default function AIInsightsPanel({ hourlyRate = 400, currency, selectedOr
     <div className={styles.result}>
       {/* Executive Pitch */}
       <section className={styles.section}>
-        <div className={styles.sectionLabel}>Executive Business Case Summary</div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.6rem' }}>
+          <div className={styles.sectionLabel} style={{ marginBottom: 0 }}>Executive Business Case Summary</div>
+          <span style={{ fontSize: '0.75rem', fontWeight: 600, padding: '0.2rem 0.55rem', borderRadius: '4px', background: 'rgba(99, 102, 241, 0.15)', color: '#818cf8', border: '1px solid rgba(99, 102, 241, 0.3)' }}>
+            Scope: {esc(selectedOrg || 'All Organizations')}
+          </span>
+        </div>
         <div className={styles.pitchCard}>
           <p>{ins.executive_pitch || ''}</p>
         </div>
@@ -245,6 +257,7 @@ export default function AIInsightsPanel({ hourlyRate = 400, currency, selectedOr
       {/* Meta footer */}
       <div className={styles.metaFooter}>
         <span>Architecture Engine: {esc(data?.model || 'Enterprise Core')}</span>
+        <span>Scope: {esc(selectedOrg || 'All')}</span>
         <span>
           Evaluated: {data?.generated_at ? new Date(data.generated_at).toLocaleTimeString() : ''}
         </span>

@@ -247,7 +247,7 @@ def get_brief(
     Full LLM-ready JSON intelligence brief.
     Paste the response body directly after the `llm_prompt` field into any LLM.
     """
-    all_events, result, obs = _run_detection(db)
+    all_events, result, obs = _run_detection(db, org_id=org_id)
     brief = build_intelligence_brief(
         patterns=result["patterns"],
         summary=result["summary"],
@@ -289,7 +289,7 @@ def get_report(
     db: Session = Depends(get_db),
 ):
     """Beautiful HTML intelligence report â€” send this to your first client."""
-    all_events, result, obs = _run_detection(db)
+    all_events, result, obs = _run_detection(db, org_id=org_id)
     brief = build_intelligence_brief(
         patterns=result["patterns"],
         summary=result["summary"],
@@ -311,7 +311,7 @@ def get_report_pdf(
     db: Session = Depends(get_db),
 ):
     """Download the intelligence report as a PDF."""
-    all_events, result, obs = _run_detection(db)
+    all_events, result, obs = _run_detection(db, org_id=org_id)
     brief = build_intelligence_brief(
         patterns=result["patterns"],
         summary=result["summary"],
@@ -347,7 +347,7 @@ class BlueprintApprovalRequest(BaseModel):
 @app.post("/blueprints/generate", tags=["Layer 5 â€” Blueprinting"])
 def generate_blueprint(pattern_id: str, db: Session = Depends(get_db)):
     """Generate a blueprint for a specific pattern ID"""
-    _, result, _ = _run_detection(db)
+    _, result, _ = _run_detection(db, org_id=None)
     pattern = next((p for p in result["patterns"] if p["pattern_id"] == pattern_id), None)
     
     if not pattern:
@@ -577,6 +577,7 @@ def get_roi_impact(
     hourly_rate: float = Query(DEFAULT_HOURLY_RATE),
     currency: str = Query(DEFAULT_CURRENCY),
     symbol: str = Query(DEFAULT_CURRENCY_SYMBOL),
+    org_id: Optional[str] = Query(None, description="Organisation identifier"),
     db: Session = Depends(get_db),
 ):
     """
@@ -585,12 +586,15 @@ def get_roi_impact(
     post-deployment execution logs to calculate verified realized savings.
     """
     # Fetch all deployed blueprints with their execution logs
-    deployed = db.query(models.AutomationBlueprint).filter(
+    deployed_q = db.query(models.AutomationBlueprint).filter(
         models.AutomationBlueprint.status == "deployed"
-    ).all()
+    )
+    if org_id and org_id != "all":
+        deployed_q = deployed_q.filter(models.AutomationBlueprint.org_id == org_id)
+    deployed = deployed_q.all()
 
     # Fetch all patterns to get baseline weekly cost
-    _, result, obs = _run_detection(db)
+    _, result, obs = _run_detection(db, org_id=org_id)
     patterns_by_id = {p["pattern_id"]: p for p in result["patterns"]}
 
     metrics = []
@@ -998,7 +1002,7 @@ def get_ai_analysis(
     Sends the intelligence brief to Gemini with structured JSON output enforcement.
     Returns grounded, hallucination-free automation advice.
     """
-    all_events, result, obs = _run_detection(db)
+    all_events, result, obs = _run_detection(db, org_id=org_id)
     brief = build_intelligence_brief(
         patterns=result["patterns"],
         summary=result["summary"],

@@ -134,7 +134,12 @@ export default function DashboardPage() {
 
         {activeTab === 'ai' && (
           <div className="panel" role="tabpanel">
-            <AIInsightsPanel hourlyRate={hourlyRate} currency={currency} selectedOrg={selectedOrg} />
+            <AIInsightsPanel
+              key={`${selectedOrg}_${currency?.code}_${hourlyRate}`}
+              hourlyRate={hourlyRate}
+              currency={currency}
+              selectedOrg={selectedOrg}
+            />
           </div>
         )}
 

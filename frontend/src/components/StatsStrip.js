@@ -46,8 +46,9 @@ export default function StatsStrip({
       let realizedLabel = `${currency.symbol}0/yr`;
       try {
         const enc = encodeURIComponent(currency.symbol);
+        const orgParam = selectedOrg && selectedOrg !== 'all' ? `&org_id=${encodeURIComponent(selectedOrg)}` : '';
         const roiRes = await fetch(
-          `${API_BASE}/analytics/roi-impact?hourly_rate=${hourlyRate}&currency=${currency.code}&symbol=${enc}`
+          `${API_BASE}/analytics/roi-impact?hourly_rate=${hourlyRate}&currency=${currency.code}&symbol=${enc}${orgParam}`
         );
         if (roiRes.ok) {
           const roi = await roiRes.json();
