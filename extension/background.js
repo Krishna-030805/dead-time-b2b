@@ -11,19 +11,30 @@ function makeSessionId() {
   return "s_" + Date.now().toString(36) + "_" + Math.random().toString(36).substr(2, 7);
 }
 
-let sessionId = makeSessionId();
-let lastEventTime = Date.now();
-const SESSION_GAP_MS = 30 * 60 * 1000; // 30 minutes — must match backend
+const SESSION_GAP_MS = 30 * 60 * 1000; // 30 minutes — matches backend
 
-// Auto-rotate session if idle too long (browser doesn't restart between uses)
-function getActiveSessionId() {
+// Auto-rotate session if idle too long (persisted in chrome.storage so service worker shutdowns don't reset timer)
+async function getActiveSessionId() {
   const now = Date.now();
-  if (now - lastEventTime > SESSION_GAP_MS) {
-    sessionId = makeSessionId();
-    console.log("[Dead Time] New session started:", sessionId);
+  try {
+    const data = await chrome.storage.local.get(["active_session_id", "last_event_time"]);
+    const lastTime = Number(data.last_event_time || 0);
+    let currentSession = data.active_session_id;
+
+    // Inactivity threshold: if no event occurred for >30 minutes, rotate session ID
+    if (!currentSession || (lastTime > 0 && (now - lastTime > SESSION_GAP_MS))) {
+      currentSession = makeSessionId();
+      console.log("[Dead Time] Inactivity threshold exceeded (>30m). Rotated session:", currentSession);
+    }
+
+    await chrome.storage.local.set({
+      active_session_id: currentSession,
+      last_event_time: now,
+    });
+    return currentSession;
+  } catch {
+    return makeSessionId();
   }
-  lastEventTime = now;
-  return sessionId;
 }
 
 // Helper: Get or initialize persistent device/user identifier
@@ -55,10 +66,13 @@ async function getOrgId() {
 }
 
 // Reset on browser startup
-chrome.runtime.onStartup.addListener(() => {
-  sessionId = makeSessionId();
-  lastEventTime = Date.now();
-  console.log("[Dead Time] Browser started. Session:", sessionId);
+chrome.runtime.onStartup.addListener(async () => {
+  const newSession = makeSessionId();
+  await chrome.storage.local.set({
+    active_session_id: newSession,
+    last_event_time: Date.now(),
+  });
+  console.log("[Dead Time] Browser started. Fresh session:", newSession);
 });
 
 // ── Event Handling ────────────────────────────────────────────────────────────
@@ -66,12 +80,12 @@ chrome.runtime.onStartup.addListener(() => {
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.type !== "WORKFLOW_EVENT") return true;
 
-  const activeSession = getActiveSessionId();
-
-  chrome.storage.local.get(["telemetry_paused"]).then((storage) => {
+  chrome.storage.local.get(["telemetry_paused"]).then(async (storage) => {
     if (storage.telemetry_paused) {
       return;
     }
+
+    const activeSession = await getActiveSessionId();
 
     Promise.all([getUserId(), getOrgId()]).then(([userId, orgId]) => {
       const payload = {
