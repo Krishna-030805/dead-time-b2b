@@ -7,7 +7,7 @@ This guide covers deploying the **FastAPI Backend** and **Next.js Frontend** to 
 ## 🚀 Quick Overview
 
 You will deploy 2 services on Render from your GitHub repository:
-1. **`deadtime-backend`** (Python Web Service) → Ingests browser telemetry, detects patterns, generates blueprints & PDFs.
+1. **`deadtime-backend`** (Python Web Service) → Ingests browser telemetry, detects patterns, generates bluep  rints & PDFs.
 2. **`deadtime-frontend`** (Node.js Web Service) → The Executive Intelligence Dashboard.
 
 ---
@@ -41,7 +41,7 @@ git push -u origin main
 | **Branch** | `main` |
 | **Root Directory** | `backend` |
 | **Runtime** | `Python 3` |
-| **Build Command** | `pip install -r requirements.txt && playwright install chromium --with-deps` |
+| **Build Command** | `pip install -r requirements.txt` |
 | **Start Command** | `uvicorn main:app --host 0.0.0.0 --port $PORT` |
 | **Instance Type** | Free (or Starter $7/mo for 0 sleep time) |
 

@@ -210,7 +210,7 @@ def list_organizations(db: Session = Depends(get_db)):
 
 @app.get("/health", tags=["Meta"])
 def health():
-    return {"status": "healthy", "version": "4.0.0", "layers_active": [1, 2, 3]}
+    return {"status": "healthy", "version": "4.2.0-scoped", "layers_active": [1, 2, 3]}
 
 
 # ─── Layer 2: Detection ───────────────────────────────────────────────────────
