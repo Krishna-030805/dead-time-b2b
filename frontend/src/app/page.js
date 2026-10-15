@@ -20,17 +20,22 @@ export default function DashboardPage() {
   const [currency, setCurrency] = useState(CURRENCIES.INR);
   const [hourlyRate, setHourlyRate] = useState(CURRENCIES.INR.defaultRate);
   const [realizedSavings, setRealizedSavings] = useState(null);
-  const [selectedOrg, setSelectedOrg] = useState('all');
-  const [organizations, setOrganizations] = useState(['org_default']);
+  const [selectedOrg, setSelectedOrg] = useState('org_enterprise_demo');
+  const [organizations, setOrganizations] = useState(['org_enterprise_demo', 'org_agency_demo']);
 
   // Read ?org= or ?org_id= from URL to isolate client workspace on screen-share
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const params = new URLSearchParams(window.location.search);
-      const orgParam = params.get('org') || params.get('org_id');
-      if (orgParam) {
-        setSelectedOrg(orgParam);
-      }
+      const readOrgFromUrl = () => {
+        const params = new URLSearchParams(window.location.search);
+        const orgParam = params.get('org') || params.get('org_id');
+        if (orgParam) {
+          setSelectedOrg(orgParam === 'org_demo' ? 'org_enterprise_demo' : orgParam);
+        }
+      };
+      readOrgFromUrl();
+      window.addEventListener('popstate', readOrgFromUrl);
+      return () => window.removeEventListener('popstate', readOrgFromUrl);
     }
   }, []);
 

@@ -68,11 +68,11 @@ export default function StatsStrip({
         realized: realizedLabel,
       });
 
-      if (onRealizedSavings && realizedLabel && realizedLabel !== `${currency.symbol}0/yr`) {
-        onRealizedSavings(realizedLabel);
+      if (onRealizedSavings) {
+        onRealizedSavings(realizedLabel && realizedLabel !== `${currency.symbol}0/yr` && realizedLabel !== `${currency.symbol}0` ? realizedLabel : null);
       }
     } catch {}
-  }, [hourlyRate, currency, onRealizedSavings]);
+  }, [hourlyRate, currency, onRealizedSavings, selectedOrg]);
 
   useEffect(() => {
     load();

@@ -145,7 +145,8 @@ export default function WorkflowsPanel({ onCount, selectedOrg }) {
   const handleGenerateBlueprint = async (patternId) => {
     try {
       setGenerating(patternId);
-      const res = await fetch(`${API_BASE}/blueprints/generate?pattern_id=${patternId}`, {
+      const orgParam = selectedOrg && selectedOrg !== 'all' ? `&org_id=${encodeURIComponent(selectedOrg)}` : '';
+      const res = await fetch(`${API_BASE}/blueprints/generate?pattern_id=${patternId}${orgParam}`, {
         method: 'POST',
       });
       if (!res.ok) throw new Error('Failed to generate blueprint');

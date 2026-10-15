@@ -113,6 +113,22 @@
   font-size: 0.85rem;
 }
 
+.clientSelect {
+  background: transparent;
+  color: #c7d2fe;
+  font-size: 0.72rem;
+  font-weight: 600;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 0 0.1rem;
+}
+
+.clientSelect option {
+  background: #0f172a;
+  color: #f8fafc;
+}
+
 .clientBadgeText {
   color: #c7d2fe;
   font-size: 0.72rem;

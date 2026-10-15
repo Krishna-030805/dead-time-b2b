@@ -119,11 +119,21 @@ def _obs_days(db_events) -> int:
     return max(int(delta.total_seconds() / 86400), 1)
 
 
+def _normalize_org_id(org_id: Optional[str]) -> Optional[str]:
+    """Normalize organization identifiers, alias org_demo to org_enterprise_demo, and handle 'all'."""
+    if not org_id or org_id == "all":
+        return None
+    if org_id == "org_demo":
+        return "org_enterprise_demo"
+    return org_id
+
+
 def _run_detection(db: Session, org_id: Optional[str] = None):
     """Full detection pipeline — returns (raw_events, result_dict, obs_days). Scoped by org_id if provided."""
+    target_org = _normalize_org_id(org_id)
     query = db.query(models.Event)
-    if org_id and org_id != "all":
-        query = query.filter(models.Event.org_id == org_id)
+    if target_org:
+        query = query.filter(models.Event.org_id == target_org)
     all_events = query.order_by(models.Event.timestamp.asc()).all()
     raw        = _to_raw(all_events)
     obs        = _obs_days(all_events)
@@ -182,9 +192,10 @@ def create_event(
 
 @app.get("/events", tags=["Layer 1 — Ingestion"])
 def get_events(limit: int = Query(100, le=1000), org_id: Optional[str] = Query(None), db: Session = Depends(get_db)):
+    target_org = _normalize_org_id(org_id)
     query = db.query(models.Event)
-    if org_id and org_id != "all":
-        query = query.filter(models.Event.org_id == org_id)
+    if target_org:
+        query = query.filter(models.Event.org_id == target_org)
     evs = query.order_by(models.Event.timestamp.desc()).limit(limit).all()
     return [
         {
@@ -235,26 +246,27 @@ def get_summary(org_id: Optional[str] = Query(None), db: Session = Depends(get_d
 
 # â”€â”€â”€ Layer 3: Intelligence Brief â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-@app.get("/workflows/brief", tags=["Layer 3 â€” Intelligence"])
+@app.get("/workflows/brief", tags=["Layer 3 — Intelligence"])
 def get_brief(
     hourly_rate: float = Query(DEFAULT_HOURLY_RATE, description="Hourly cost per knowledge worker"),
     currency: str = Query(DEFAULT_CURRENCY, description="Currency code (e.g. INR, USD, GBP, EUR)"),
-    symbol: str = Query(DEFAULT_CURRENCY_SYMBOL, description="Currency symbol (e.g. â‚¹, $, Â£, â‚¬)"),
-    org_id: str = Query("org_demo", description="Organisation identifier"),
+    symbol: str = Query(DEFAULT_CURRENCY_SYMBOL, description="Currency symbol (e.g. ₹, $, £, €)"),
+    org_id: Optional[str] = Query(None, description="Organisation identifier"),
     db: Session = Depends(get_db),
 ):
     """
     Full LLM-ready JSON intelligence brief.
     Paste the response body directly after the `llm_prompt` field into any LLM.
     """
-    all_events, result, obs = _run_detection(db, org_id=org_id)
+    target_org = _normalize_org_id(org_id)
+    all_events, result, obs = _run_detection(db, org_id=target_org)
     brief = build_intelligence_brief(
         patterns=result["patterns"],
         summary=result["summary"],
         hourly_rate=hourly_rate,
         currency=currency,
         currency_symbol=symbol,
-        org_id=org_id,
+        org_id=target_org or "all",
         observation_days=obs,
     )
 
@@ -265,7 +277,7 @@ def get_brief(
         total_a = sum(p["roi"]["annual_cost"]  for p in brief["workflows"])
         db_brief = models.DetectedBrief(
             brief_id=brief["meta"]["brief_id"],
-            org_id=org_id,
+            org_id=target_org or "all",
             hourly_rate=hourly_rate,
             brief_json=brief,
             patterns_count=len(brief["workflows"]),
@@ -280,45 +292,47 @@ def get_brief(
     return JSONResponse(content=brief)
 
 
-@app.get("/workflows/report", response_class=HTMLResponse, tags=["Layer 3 â€” Intelligence"])
+@app.get("/workflows/report", response_class=HTMLResponse, tags=["Layer 3 — Intelligence"])
 def get_report(
     hourly_rate: float = Query(DEFAULT_HOURLY_RATE, description="Hourly rate"),
     currency: str = Query(DEFAULT_CURRENCY, description="Currency code"),
     symbol: str = Query(DEFAULT_CURRENCY_SYMBOL, description="Currency symbol"),
-    org_id: str = Query("org_demo", description="Organisation identifier"),
+    org_id: Optional[str] = Query(None, description="Organisation identifier"),
     db: Session = Depends(get_db),
 ):
-    """Beautiful HTML intelligence report â€” send this to your first client."""
-    all_events, result, obs = _run_detection(db, org_id=org_id)
+    """Beautiful HTML intelligence report — send this to your first client."""
+    target_org = _normalize_org_id(org_id)
+    all_events, result, obs = _run_detection(db, org_id=target_org)
     brief = build_intelligence_brief(
         patterns=result["patterns"],
         summary=result["summary"],
         hourly_rate=hourly_rate,
         currency=currency,
         currency_symbol=symbol,
-        org_id=org_id,
+        org_id=target_org or "all",
         observation_days=obs,
     )
     return _render_report(brief)
 
 
-@app.get("/workflows/report/pdf", tags=["Layer 3 â€” Intelligence"])
+@app.get("/workflows/report/pdf", tags=["Layer 3 — Intelligence"])
 def get_report_pdf(
     hourly_rate: float = Query(DEFAULT_HOURLY_RATE, description="Hourly rate"),
     currency: str = Query(DEFAULT_CURRENCY, description="Currency code"),
     symbol: str = Query(DEFAULT_CURRENCY_SYMBOL, description="Currency symbol"),
-    org_id: str = Query("org_demo", description="Organisation identifier"),
+    org_id: Optional[str] = Query(None, description="Organisation identifier"),
     db: Session = Depends(get_db),
 ):
     """Download the intelligence report as a PDF."""
-    all_events, result, obs = _run_detection(db, org_id=org_id)
+    target_org = _normalize_org_id(org_id)
+    all_events, result, obs = _run_detection(db, org_id=target_org)
     brief = build_intelligence_brief(
         patterns=result["patterns"],
         summary=result["summary"],
         hourly_rate=hourly_rate,
         currency=currency,
         currency_symbol=symbol,
-        org_id=org_id,
+        org_id=target_org or "all",
         observation_days=obs,
     )
     pdf_bytes = generate_pdf_report(brief)
@@ -326,8 +340,9 @@ def get_report_pdf(
         return Response(
             content=pdf_bytes, 
             media_type="application/pdf", 
-            headers={"Content-Disposition": f'attachment; filename="DeadTime_Report_{org_id}.pdf"'}
+            headers={"Content-Disposition": f'attachment; filename="DeadTime_Report_{target_org or "all"}.pdf"'}
         )
+    return HTMLResponse(content=_render_pdf_html(brief))
     # Fallback when headless browser is not installed in cloud container
     from pdf_engine import _render_pdf_html
     html_content = _render_pdf_html(brief)
@@ -344,11 +359,16 @@ def get_report_pdf(
 class BlueprintApprovalRequest(BaseModel):
     action: str # "approve" or "reject"
 
-@app.post("/blueprints/generate", tags=["Layer 5 â€” Blueprinting"])
-def generate_blueprint(pattern_id: str, db: Session = Depends(get_db)):
+@app.post("/blueprints/generate", tags=["Layer 5 — Blueprinting"])
+def generate_blueprint(pattern_id: str, org_id: Optional[str] = Query(None), db: Session = Depends(get_db)):
     """Generate a blueprint for a specific pattern ID"""
-    _, result, _ = _run_detection(db, org_id=None)
+    target_org = _normalize_org_id(org_id)
+    _, result, _ = _run_detection(db, org_id=target_org)
     pattern = next((p for p in result["patterns"] if p["pattern_id"] == pattern_id), None)
+    
+    if not pattern:
+        _, result, _ = _run_detection(db, org_id=None)
+        pattern = next((p for p in result["patterns"] if p["pattern_id"] == pattern_id), None)
     
     if not pattern:
         return JSONResponse(status_code=404, content={"error": "Pattern not found"})
@@ -356,6 +376,7 @@ def generate_blueprint(pattern_id: str, db: Session = Depends(get_db)):
     bp_data = generate_blueprint_for_pattern(pattern)
     
     db_blueprint = models.AutomationBlueprint(
+        org_id=target_org or "org_enterprise_demo",
         pattern_id=pattern_id,
         name=bp_data.get("blueprint_name", pattern.get("name", "Unknown")),
         blueprint_json=bp_data,
@@ -369,9 +390,10 @@ def generate_blueprint(pattern_id: str, db: Session = Depends(get_db)):
 
 @app.get("/blueprints", tags=["Layer 5 — Blueprinting"])
 def list_blueprints(org_id: Optional[str] = Query(None), db: Session = Depends(get_db)):
+    target_org = _normalize_org_id(org_id)
     query = db.query(models.AutomationBlueprint)
-    if org_id and org_id != "all":
-        query = query.filter(models.AutomationBlueprint.org_id == org_id)
+    if target_org:
+        query = query.filter(models.AutomationBlueprint.org_id == target_org)
     bps = query.order_by(models.AutomationBlueprint.created_at.desc()).all()
     return [{
         "id": b.id,
@@ -572,7 +594,7 @@ def dry_run_blueprint(blueprint_id: int, req: DryRunRequest, db: Session = Depen
 
 # â”€â”€â”€ Layer 11: Before vs After ROI Tracker â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-@app.get("/analytics/roi-impact", tags=["Layer 11 â€” ROI Tracker"])
+@app.get("/analytics/roi-impact", tags=["Layer 11 — ROI Tracker"])
 def get_roi_impact(
     hourly_rate: float = Query(DEFAULT_HOURLY_RATE),
     currency: str = Query(DEFAULT_CURRENCY),
@@ -585,16 +607,16 @@ def get_roi_impact(
     Compares historical (pre-automation) workflow costs against current
     post-deployment execution logs to calculate verified realized savings.
     """
-    # Fetch all deployed blueprints with their execution logs
+    target_org = _normalize_org_id(org_id)
     deployed_q = db.query(models.AutomationBlueprint).filter(
         models.AutomationBlueprint.status == "deployed"
     )
-    if org_id and org_id != "all":
-        deployed_q = deployed_q.filter(models.AutomationBlueprint.org_id == org_id)
+    if target_org:
+        deployed_q = deployed_q.filter(models.AutomationBlueprint.org_id == target_org)
     deployed = deployed_q.all()
 
     # Fetch all patterns to get baseline weekly cost
-    _, result, obs = _run_detection(db, org_id=org_id)
+    _, result, obs = _run_detection(db, org_id=target_org)
     patterns_by_id = {p["pattern_id"]: p for p in result["patterns"]}
 
     metrics = []
@@ -989,12 +1011,12 @@ _LEGACY_DASHBOARD_REMOVED = True  # Marker for audit trail
 DASHBOARD_HTML = None  # Content removed â€” superseded by Next.js frontend
 
 
-@app.get("/workflows/ai-analysis", tags=["Layer 4 â€” AI Insights"])
+@app.get("/workflows/ai-analysis", tags=["Layer 4 — AI Insights"])
 def get_ai_analysis(
     hourly_rate: float = Query(DEFAULT_HOURLY_RATE, description="Hourly rate"),
     currency: str = Query(DEFAULT_CURRENCY, description="Currency code"),
     symbol: str = Query(DEFAULT_CURRENCY_SYMBOL, description="Currency symbol"),
-    org_id: str = Query("org_demo"),
+    org_id: Optional[str] = Query(None, description="Organisation identifier"),
     db: Session = Depends(get_db),
 ):
     """
@@ -1002,14 +1024,15 @@ def get_ai_analysis(
     Sends the intelligence brief to Gemini with structured JSON output enforcement.
     Returns grounded, hallucination-free automation advice.
     """
-    all_events, result, obs = _run_detection(db, org_id=org_id)
+    target_org = _normalize_org_id(org_id)
+    all_events, result, obs = _run_detection(db, org_id=target_org)
     brief = build_intelligence_brief(
         patterns=result["patterns"],
         summary=result["summary"],
         hourly_rate=hourly_rate,
         currency=currency,
         currency_symbol=symbol,
-        org_id=org_id,
+        org_id=target_org or "all",
         observation_days=obs,
     )
     response = analyze_brief(brief)

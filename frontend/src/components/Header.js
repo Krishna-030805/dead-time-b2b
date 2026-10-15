@@ -35,14 +35,33 @@ export default function Header({
       </div>
 
       <div className={styles.right}>
-        {/* Scoped Client Workspace (Zero leakage of other client names on screen share) */}
+        {/* Scoped Client Workspace Selector */}
         <div className={styles.clientSelectorWrap} title="Active Audit Workspace">
           <span className={styles.clientIcon}>🏢</span>
-          <span className={styles.clientBadgeText}>
-            {selectedOrg && selectedOrg !== 'all' && selectedOrg !== 'org_default'
-              ? `Workspace: ${selectedOrg.replace(/^org_/, '').replace(/_/g, ' ').toUpperCase()}`
-              : 'Audit Workspace'}
-          </span>
+          <select
+            className={styles.clientSelect}
+            value={selectedOrg || 'org_enterprise_demo'}
+            onChange={(e) => {
+              const val = e.target.value;
+              onOrgChange?.(val);
+              if (typeof window !== 'undefined') {
+                const url = new URL(window.location.href);
+                url.searchParams.set('org', val);
+                window.history.pushState({}, '', url.toString());
+              }
+            }}
+          >
+            <option value="org_enterprise_demo">Enterprise Demo</option>
+            <option value="org_agency_demo">Agency Demo</option>
+            <option value="all">All Workspaces</option>
+            {organizations
+              .filter((o) => o !== 'org_enterprise_demo' && o !== 'org_agency_demo' && o !== 'all' && o !== 'org_demo')
+              .map((org) => (
+                <option key={org} value={org}>
+                  {org.replace(/^org_/, '').replace(/_/g, ' ').toUpperCase()}
+                </option>
+              ))}
+          </select>
         </div>
 
         {/* Realized savings badge — shown only when automations are deployed */}
